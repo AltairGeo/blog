@@ -26,3 +26,7 @@ async def login(loginData: schemas.Login):
         return await dbORM.UserLogin(loginData)
     except Errs.UserNotFound as e:
          raise HTTPException(e.status_code, str(e))
+    
+@router.post("/create_post")
+async def create_post(post: schemas.CreatePost):
+    return await dbORM.AddPost(post=post)

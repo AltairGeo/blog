@@ -18,10 +18,11 @@ class Hashing:
 
 class JwT:
     @staticmethod
-    def generateJWT(user: schemas.UserFToken):
-        return jwt.encode({"id": user.id, "email": user.email}, settings.jwt_secret, settings.jwt_algo[0])
+    def generateJWT(user: schemas.UserFToken) -> schemas.Token:
+        return schemas.Token(token=jwt.encode({"id": user.id, "email": user.email}, settings.jwt_secret, settings.jwt_algo[0]))
     
     @staticmethod
-    def decodeJWT(token: schemas.Token):
-        return jwt.decode(token.token, settings.jwt_secret, algorithms=settings.jwt_algo)
+    def decodeJWT(token: schemas.Token) -> schemas.UserFToken:
+        decoded = jwt.decode(token.token, settings.jwt_secret, algorithms=settings.jwt_algo)
+        return schemas.UserFToken(id=decoded["id"], email=decoded["email"])
         

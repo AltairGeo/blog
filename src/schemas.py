@@ -21,9 +21,11 @@ class UserFToken(BaseModel):
 
 class Post(BaseModel):
     title: str
-    author: int
     text: str
     created_at: datetime.datetime
 
 class CreatePost(Post):
     token: Token
+
+class PostGet(Post):
+    author: int
