@@ -20,6 +20,7 @@ class dbORM:
             else:
                 session.add(Usr)
                 await session.commit()
+                return "Successfully!"
 
 
     @staticmethod
@@ -34,11 +35,18 @@ class dbORM:
                 raise Errs.UserNotFound
             if result[0].email == user.email:
                 if result[0].password == hash_password:
-                    return Token(token=JwT.generateJWT(UserFToken(id=result[0].id, email=user.email)))      
+                    return JwT.generateJWT(UserFToken(id=result[0].id, email=user.email))
                 
 
     @staticmethod
     async def AddPost(post: CreatePost):
         decoded_token = JwT.decodeJWT(post.token)
-        return decoded_token
-        
+        async with async_session_factory() as session:
+            query = select(Users).filter_by(id=decoded_token.id)
+            result = await session.execute(query)
+            author = result.first()[0]
+
+            stmnt = Posts(title=post.title, text=post.text, author=author, created_at=post.created_at)
+            session.add(stmnt)
+            await session.commit()
+            return "Successfully!"

@@ -5,7 +5,6 @@ from db.control import dbORM
 from db.core import create_tables
 
 
-
 router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/")
@@ -27,6 +26,3 @@ async def login(loginData: schemas.Login):
     except Errs.UserNotFound as e:
          raise HTTPException(e.status_code, str(e))
     
-@router.post("/create_post")
-async def create_post(post: schemas.CreatePost):
-    return await dbORM.AddPost(post=post)

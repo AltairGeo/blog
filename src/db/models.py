@@ -1,6 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, relationship
 from sqlalchemy import String, ForeignKey
 from typing import List
+from datetime import datetime
 
 
 class Base(DeclarativeBase):
@@ -24,3 +25,4 @@ class Posts(Base):
     text: Mapped[str]
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     author: Mapped["Users"] = relationship(back_populates="posts")
+    created_at: Mapped[datetime]
