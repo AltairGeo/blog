@@ -19,7 +19,7 @@ class Hashing:
 class JwT:
     @staticmethod
     def generateJWT(user: schemas.UserFToken) -> schemas.Token:
-        return schemas.Token(token=jwt.encode({"id": user.id, "email": user.email, "expires_at": (datetime.now() + timedelta(hours=8)).isoformat()},
+        return schemas.Token(token=jwt.encode({"id": user.id, "email": user.email, "expires_at": user.expires_at.isoformat()},
                                                settings.jwt_secret, 
                                                settings.jwt_algo[0]))
 
@@ -33,9 +33,16 @@ class JwT:
 
 
     @staticmethod
-    def check_for_expire(token: schemas.Token):
+    def check_token_for_expire(token: schemas.Token):
         decoded = JwT.decodeJWT(token=token)
         if decoded.expires_at > datetime.now():
+            return True
+        else:
+            return False
+        
+    @staticmethod
+    def check_for_expire(date: datetime):
+        if date > datetime.now():
             return True
         else:
             return False
