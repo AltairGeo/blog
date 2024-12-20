@@ -2,7 +2,7 @@ import hashlib
 import jwt
 import schemas
 from config import settings
-from jwt.exceptions import InvalidSignatureError
+from datetime import datetime, timedelta
 
 
 class Hashing:
@@ -14,15 +14,28 @@ class Hashing:
             raise ValueError("Password cannot be empty")
         hashs = hashlib.md5(password.encode()).hexdigest()
         return hashs
-        
+
 
 class JwT:
     @staticmethod
     def generateJWT(user: schemas.UserFToken) -> schemas.Token:
-        return schemas.Token(token=jwt.encode({"id": user.id, "email": user.email}, settings.jwt_secret, settings.jwt_algo[0]))
-    
+        return schemas.Token(token=jwt.encode({"id": user.id, "email": user.email, "expires_at": (datetime.now() + timedelta(hours=8)).isoformat()},
+                                               settings.jwt_secret, 
+                                               settings.jwt_algo[0]))
+
+
     @staticmethod
     def decodeJWT(token: schemas.Token) -> schemas.UserFToken:
         decoded = jwt.decode(token.token, settings.jwt_secret, algorithms=settings.jwt_algo)
-        return schemas.UserFToken(id=decoded["id"], email=decoded["email"])
-        
+        return schemas.UserFToken(id=decoded["id"],
+                                  email=decoded["email"],
+                                  expires_at=datetime.fromisoformat(decoded["expires_at"]))
+
+
+    @staticmethod
+    def check_for_expire(token: schemas.Token):
+        decoded = JwT.decodeJWT(token=token)
+        if decoded.expires_at > datetime.now():
+            return True
+        else:
+            return False

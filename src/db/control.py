@@ -4,6 +4,7 @@ from schemas import UserReg, Login, UserFToken, Post, Token, CreatePost
 from sqlalchemy import select
 from security import Hashing, JwT
 from db import Errs
+from fastapi import HTTPException
 
 
 class dbORM:
@@ -26,6 +27,7 @@ class dbORM:
     @staticmethod
     async def UserLogin(user: Login)-> Token:
         hash_password = Hashing.create_hash(user.password)
+        print(user.email, user.password)
         async with async_session_factory() as session:
 
             query = select(Users).filter_by(email=user.email.strip())
@@ -36,6 +38,9 @@ class dbORM:
             if result[0].email == user.email:
                 if result[0].password == hash_password:
                     return JwT.generateJWT(UserFToken(id=result[0].id, email=user.email))
+                else:
+                    raise HTTPException(400, "Uncorrect password!")
+                    
                 
 
     @staticmethod
