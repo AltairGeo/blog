@@ -20,13 +20,16 @@ class UserFToken(BaseModel):
     email: EmailStr
     expires_at: datetime
 
-class Post(BaseModel):
+class BasePost(BaseModel):
     title: str
     text: str
     created_at: datetime = datetime.now()
 
-class CreatePost(Post):
+
+class Post(BasePost):
+    author_id: int
+
+
+class CreatePost(BasePost):
     token: Token
 
-class PostGet(Post):
-    author: int

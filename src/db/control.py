@@ -1,6 +1,6 @@
 from db.models import Users, Posts
 from db.core import async_session_factory
-from schemas import UserReg, Login, UserFToken, Post, Token, CreatePost
+from schemas import UserReg, Login, UserFToken, Token, CreatePost, Post
 from sqlalchemy import select
 from security import Hashing, JwT
 from db import Errs
@@ -10,9 +10,15 @@ from datetime import datetime, timedelta
 from typing import List
 
 
+def page_offset_calculation(page: int) -> int:
+    if page <= 0:
+        raise exceptions.PageLessZero
+    return ((page * 5) - 5)
+
+
 class UserORM:
     @staticmethod
-    async def UserAdd(user: UserReg) -> None:
+    async def UserAdd(user: UserReg) -> str:
         user.password = Hashing.create_hash(user.password)
         Usr = Users(nickname=user.nickname, email=user.email.strip(), password=user.password)
         async with async_session_factory() as session:
@@ -68,4 +74,21 @@ class PostORM:
         async with async_session_factory() as session:
             stmnt = select(Posts).order_by(Posts.created_at.desc()).limit(20)
             result = await session.execute(stmnt)
-            return result.scalars().all()
+            result = result.scalars().all()
+            if result == []:
+                raise exceptions.PostsNotFound
+            return result
+        
+
+    @staticmethod
+    async def GetLastPagePosts(page: int) -> List[Posts]:
+        offset = page_offset_calculation(page)
+        print(offset)
+        async with async_session_factory() as session:
+            stmnt = select(Posts).order_by(Posts.created_at.desc()).offset(offset=offset).limit(20)
+            result = await session.execute(stmnt)
+            result = result.scalars().all()
+            if result == []:
+                raise exceptions.PostsNotFound
+            print(result)
+            return result

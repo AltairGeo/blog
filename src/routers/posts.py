@@ -1,6 +1,7 @@
 from fastapi import HTTPException, APIRouter
 from db.control import PostORM
 import schemas
+from typing import List
 
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -15,5 +16,12 @@ async def create_post(post: schemas.CreatePost):
     
 
 @router.get("/get_last_posts")
-async def get_last_posts():
+async def get_last_posts() -> List[schemas.Post]:
     return await PostORM.GetLastTenPosts()
+
+
+@router.get("/get_page_lasts_posts")
+async def get_page_lasts_posts(page: int) -> List[schemas.Post]:
+    return await PostORM.GetLastPagePosts(page)
+
+
