@@ -7,7 +7,7 @@ from db.core import create_tables
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
-@router.post("/")
+@router.post("/register")
 async def register(user: schemas.UserReg):
     try:
         return await dbORM.UserAdd(user=user)

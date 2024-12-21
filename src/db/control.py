@@ -40,8 +40,7 @@ class dbORM:
                     return JwT.generateJWT(UserFToken(id=result[0].id, email=user.email, expires_at=(datetime.now() + timedelta(hours=8))))
                 else:
                     raise HTTPException(400, "Uncorrect password!")
-                    
-                
+
 
     @staticmethod
     async def AddPost(post: CreatePost):
@@ -57,4 +56,4 @@ class dbORM:
                 await session.commit()
                 return "Successfully!"
         else:
-            raise 
+            raise exceptions.TokenWasExpire
