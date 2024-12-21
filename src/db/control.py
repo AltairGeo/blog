@@ -7,9 +7,10 @@ from db import Errs
 from fastapi import HTTPException
 import exceptions
 from datetime import datetime, timedelta
+from typing import List
 
 
-class dbORM:
+class UserORM:
     @staticmethod
     async def UserAdd(user: UserReg) -> None:
         user.password = Hashing.create_hash(user.password)
@@ -42,6 +43,9 @@ class dbORM:
                     raise HTTPException(400, "Uncorrect password!")
 
 
+
+        
+class PostORM:
     @staticmethod
     async def AddPost(post: CreatePost):
         decoded_token = JwT.decodeJWT(post.token)
@@ -57,3 +61,11 @@ class dbORM:
                 return "Successfully!"
         else:
             raise exceptions.TokenWasExpire
+        
+    
+    @staticmethod
+    async def GetLastTenPosts() -> List[Posts]:
+        async with async_session_factory() as session:
+            stmnt = select(Posts).order_by(Posts.created_at.desc()).limit(20)
+            result = await session.execute(stmnt)
+            return result.scalars().all()
