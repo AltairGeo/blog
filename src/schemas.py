@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from fastapi import UploadFile, File
+from typing import Optional
 
 class UserReg(BaseModel):
     nickname: str
@@ -32,4 +34,9 @@ class Post(BasePost):
 
 class CreatePost(BasePost):
     token: Token
+
+
+class AvatarHashGenerate(BaseModel):
+    id: int
+    email: EmailStr
 
