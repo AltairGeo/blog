@@ -1,6 +1,6 @@
 from db.models import Users, Posts
 from db.core import async_session_factory
-from schemas import UserReg, Login, UserFToken, Token, CreatePost, Post
+from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash
 from sqlalchemy import select
 from security import Hashing, JwT
 from db import Errs
@@ -8,6 +8,7 @@ from fastapi import HTTPException
 import exceptions
 from datetime import datetime, timedelta
 from typing import List
+from storage.fs import ImageFS
 
 
 def page_offset_calculation(page: int) -> int:
@@ -48,7 +49,39 @@ class UserORM:
                 else:
                     raise HTTPException(400, "Uncorrect password!")
 
+    @staticmethod
+    async def UserAvatarChange(image_hash: AvatarHash, token: Token):
+        if JwT.check_token_for_expire(token):
+            decode = JwT.decodeJWT(token)
+            async with async_session_factory() as session:
+                stmnt = select(Users).filter_by(id=decode.id)
+                res = await session.execute(stmnt)
+                usr = res.scalars().first()
+                if usr:
+                    if usr.avatar_path != None:
+                        inx = ImageFS()
+                        try:
+                            inx.DelOldAvatar(usr.avatar_path)
+                        except Exception as e:
+                            print(f"WARNING!: {e}")
+                    try:
+                        usr.avatar_path = image_hash.image_hash
+                        await session.commit()
+                        return "Successfully!"
+                    except Exception as e:
+                        await session.rollback()
+                else:
+                    raise exceptions.UserNotFound
 
+    @staticmethod
+    async def GetUserAvatarHashById(id: int) -> str:
+        async with async_session_factory() as session:
+            stmnt = select(Users).filter_by(id=id)
+            res = await session.execute(stmnt)
+            res = res.scalars().first()
+            if res is None:
+                raise exceptions.UserNotFound
+            return res.avatar_path
 
         
 class PostORM:
@@ -92,3 +125,4 @@ class PostORM:
                 raise exceptions.PostsNotFound
             print(result)
             return result
+        

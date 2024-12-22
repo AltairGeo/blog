@@ -1,14 +1,13 @@
 from fastapi import FastAPI
-from routers import users
-from routers import posts
+import routers
 import uvicorn
 from fastapi.responses import HTMLResponse
 
 
 app = FastAPI()
 
-app.include_router(users.router)
-app.include_router(posts.router)
+app.include_router(routers.posts.router)
+app.include_router(routers.users.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def index():

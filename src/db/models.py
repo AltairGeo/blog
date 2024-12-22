@@ -14,6 +14,7 @@ class Users(Base):
     nickname: Mapped[str] = mapped_column(String(50))
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
+    avatar_path: Mapped[str] = mapped_column(nullable=True)
     posts: Mapped[List["Posts"]] = relationship(back_populates="author")
 
 

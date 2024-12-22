@@ -2,8 +2,8 @@ import hashlib
 import jwt
 import schemas
 from config import settings
-from datetime import datetime, timedelta
-
+from datetime import datetime
+import exceptions
 
 class Hashing:
     @staticmethod
@@ -26,10 +26,13 @@ class JwT:
 
     @staticmethod
     def decodeJWT(token: schemas.Token) -> schemas.UserFToken:
-        decoded = jwt.decode(token.token, settings.jwt_secret, algorithms=settings.jwt_algo)
-        return schemas.UserFToken(id=decoded["id"],
-                                  email=decoded["email"],
-                                  expires_at=datetime.fromisoformat(decoded["expires_at"]))
+        try:
+            decoded = jwt.decode(token.token, settings.jwt_secret, algorithms=settings.jwt_algo)
+            return schemas.UserFToken(id=decoded["id"],
+                                    email=decoded["email"],
+                                    expires_at=datetime.fromisoformat(decoded["expires_at"]))
+        except:
+            raise exceptions.InvalidToken
 
 
     @staticmethod

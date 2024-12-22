@@ -1,7 +1,5 @@
-import storage
-import schemas
+import db
+import asyncio
 
 
-inx = storage.fs.ImageFS()
-inx.AvatarSave()
-
+print(asyncio.run(db.control.UserORM.GetUserAvatarHashById(-1)))
