@@ -3,7 +3,8 @@ import hashlib
 from random import randint
 import schemas
 import os
-
+from PIL import Image
+import io
 
 
 class IndexationImage:
@@ -32,16 +33,23 @@ class ImageFS(IndexationImage):
         super().__init__()
         self.__def_path = settings.img_storage_path
 
-    def AvatarSave(self, inp: schemas.AvatarHashGenerate, image):
+    def AvatarSave(self, inp: schemas.AvatarHashGenerate, image: bytes):
+        index = self.create_index()
         if not os.path.exists(self.__def_path):
             os.mkdir(self.__def_path)
-        index = self.create_index()
         if not os.path.exists(f"{self.__def_path}/{index}"):
             os.mkdir(f"{self.__def_path}/{index}")
-
         image_hash = self.create_hash(inp)
+
+        buffer = io.BytesIO(image)
+        buffer.seek(0)
+        img = Image.open(buffer)
+        img.thumbnail((256, 256))
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+
         with open(f"{self.__def_path}/{index}/{image_hash}.png", "wb") as f:
-            f.write(image)
+            f.write(buffer.getvalue())
         return self.compose_hash(index, image_hash)
     
 

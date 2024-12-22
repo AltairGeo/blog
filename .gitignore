@@ -52,6 +52,7 @@ coverage.xml
 cover/
 
 *config/
+*AvatarFS/
 
 # Translations
 *.mo

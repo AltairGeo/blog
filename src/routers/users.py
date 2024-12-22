@@ -23,10 +23,10 @@ async def register(user: schemas.UserReg):
 
 @router.post("/upload_avatar")
 async def upload_avatar(token: Annotated[str, Form()], image: UploadFile = File(...)):
-    image_file = await image.read()
+    buffer = await image.read()
     decoded = security.JwT.decodeJWT(token=schemas.Token(token=token))
     if security.JwT.check_for_expire(decoded.expires_at):
-        hash_image = schemas.AvatarHash(image_hash=fss.AvatarSave(schemas.AvatarHashGenerate(id=decoded.id, email=decoded.email), image=image_file))
+        hash_image = schemas.AvatarHash(image_hash=fss.AvatarSave(schemas.AvatarHashGenerate(id=decoded.id, email=decoded.email), image=buffer))
         return await UserORM.UserAvatarChange(image_hash=hash_image, token=schemas.Token(token=token))
     else:
          raise exceptions.TokenWasExpire
