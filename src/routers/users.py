@@ -9,6 +9,7 @@ from typing import Annotated
 from db.control import UserORM
 from db.core import create_tables
 from storage import fs
+import os
 
 router = APIRouter(prefix="/users", tags=["Users"])
 fss = fs.ImageFS()
@@ -48,4 +49,10 @@ async def login(loginData: schemas.Login):
 @router.get("/avatar_by_id")
 async def get_avatar_by_id(ids: int):
     image_hash = await UserORM.GetUserAvatarHashById(id=ids)
-    return FileResponse(f"{fss.OrganizePath(image_hash)}")
+    image_path = fss.OrganizePath(image_hash)
+    if os.path.exists(image_path):    
+        return FileResponse(image_path)
+    else:
+        raise HTTPException(500, "Avatar not found!")
+        
+             

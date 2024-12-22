@@ -5,6 +5,7 @@ import schemas
 import os
 from PIL import Image
 import io
+from fastapi import HTTPException
 
 
 class IndexationImage:
@@ -55,7 +56,11 @@ class ImageFS(IndexationImage):
 
     def DelOldAvatar(self, image_hash):
         dec = self.decompose_hash(image_hash)
-        os.remove(f"{self.__def_path}/{dec["index"]}/{dec["hash"]}.png")
+        try:
+            os.remove(f"{self.__def_path}/{dec["index"]}/{dec["hash"]}.png")
+        except Exception as e:
+            print(e)
+            
 
     def OrganizePath(self, image_hash):
         dec = self.decompose_hash(image_hash)
