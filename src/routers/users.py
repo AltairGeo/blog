@@ -54,5 +54,22 @@ async def get_avatar_by_id(ids: int):
         return FileResponse(image_path)
     else:
         raise HTTPException(500, "Avatar not found!")
+
+
+@router.post("/avatar_by_token")
+async def get_avatar_by_token(token: schemas.Token):
+    decoded = security.JwT.decodeJWT(token)
+    if security.JwT.check_for_expire(date=decoded.expires_at):
+        image_hash = await UserORM.GetUserAvatarHashById(id=decoded.id)
+        image_path = fss.OrganizePath(image_hash)
+        if os.path.exists(image_path):    
+            return FileResponse(image_path)
+        else:
+            raise HTTPException(500, "Avatar not found!")
+    else:
+        raise exceptions.TokenWasExpire
+
+
+
         
              

@@ -3,7 +3,9 @@ from db.models import *
 from config import settings
 
 
-engine = create_async_engine(f"postgresql+asyncpg://{settings.db_url}")
+#engine = create_async_engine(f"postgresql+asyncpg://{settings.db_url}")
+
+engine = create_async_engine(settings.db_url)
 async_session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
 

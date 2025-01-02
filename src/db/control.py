@@ -73,6 +73,7 @@ class UserORM:
                 else:
                     raise exceptions.UserNotFound
 
+
     @staticmethod
     async def GetUserAvatarHashById(id: int) -> str:
         async with async_session_factory() as session:

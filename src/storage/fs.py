@@ -45,7 +45,12 @@ class ImageFS(IndexationImage):
         buffer = io.BytesIO(image)
         buffer.seek(0)
         img = Image.open(buffer)
-        img.thumbnail((256, 256))
+        #img.thumbnail((256, 256))
+        left = (img.width - 256) // 2
+        top = (img.height - 256) // 2
+        right = left + 256
+        bottom = top + 256
+        img = img.crop((left, top, right, bottom))
         buffer = io.BytesIO()
         img.save(buffer, format="PNG")
 
