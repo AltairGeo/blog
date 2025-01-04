@@ -25,3 +25,7 @@ class InvalidToken(HTTPException):
 class UserNotFound(HTTPException):
     def __init__(self):
         super().__init__(404, detail="User not found 0_o!")
+
+class InvalidID(HTTPException):
+    def __init__(self):
+        super().__init__(400, "ID lower or is zero!")

@@ -2,6 +2,7 @@ from fastapi import HTTPException, APIRouter
 from db.control import PostORM
 import schemas
 from typing import List
+import exceptions
 
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -25,3 +26,9 @@ async def get_page_lasts_posts(page: int) -> List[schemas.Post]:
     return await PostORM.GetLastPagePosts(page)
 
 
+@router.get("/get_post_by_id")
+async def get_post_by_id(ids: int) -> schemas.Post:
+    if ids <= 0:
+        raise exceptions.InvalidID
+    return await PostORM.GetPostById(id=ids)
+    

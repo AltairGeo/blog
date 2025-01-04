@@ -136,4 +136,11 @@ class PostORM:
                 raise exceptions.PostsNotFound
             print(result)
             return result
+    
+    @staticmethod
+    async def GetPostById(id: int) -> Posts:
+        async with async_session_factory() as session:
+            stmnt = select(Posts).filter_by(id=id)
+            res = await session.execute(stmnt)
+            return res.scalars().first()
         
