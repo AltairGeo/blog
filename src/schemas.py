@@ -21,6 +21,7 @@ class UserFToken(BaseModel):
     expires_at: datetime
 
 class BasePost(BaseModel):
+    id: int
     title: str
     text: str
     created_at: datetime = datetime.now()
