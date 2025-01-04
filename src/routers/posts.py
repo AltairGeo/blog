@@ -30,5 +30,8 @@ async def get_page_lasts_posts(page: int) -> List[schemas.Post]:
 async def get_post_by_id(ids: int) -> schemas.Post:
     if ids <= 0:
         raise exceptions.InvalidID
-    return await PostORM.GetPostById(id=ids)
-    
+    result = await PostORM.GetPostById(id=ids)
+    if result != None:
+        return result
+    else:
+        raise exceptions.PostNotFound
