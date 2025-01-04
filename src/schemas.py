@@ -6,6 +6,9 @@ class UserReg(BaseModel):
     email: EmailStr
     password: str
 
+class LiteUser(BaseModel):
+    id: int
+    nickname: str
 
 class Login(BaseModel):
     email: EmailStr

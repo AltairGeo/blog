@@ -1,6 +1,6 @@
 from db.models import Users, Posts
 from db.core import async_session_factory
-from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash
+from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash, LiteUser
 from sqlalchemy import select
 from security import Hashing, JwT
 from db import Errs
@@ -84,6 +84,16 @@ class UserORM:
                 raise exceptions.UserNotFound
             return res.avatar_path
 
+    
+    @staticmethod
+    async def GetUserById(id: int) -> LiteUser:
+        async with async_session_factory() as session:
+            stmnt = select(Users).filter_by(id=id)
+            res = await session.execute(stmnt)
+            res = res.scalars().first()
+            if res is None:
+                raise exceptions.UserNotFound
+            return LiteUser(id=id, nickname=res.nickname)
         
 class PostORM:
     @staticmethod

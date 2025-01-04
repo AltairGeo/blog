@@ -70,6 +70,9 @@ async def get_avatar_by_token(token: schemas.Token):
         raise exceptions.TokenWasExpire
 
 
+@router.get("/get_user")
+async def get_user(id: int) -> schemas.LiteUser:
+    return await UserORM.GetUserById(id=id)
 
         
              
