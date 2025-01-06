@@ -45,7 +45,6 @@ class ImageFS(IndexationImage):
         buffer = io.BytesIO(image)
         buffer.seek(0)
         img = Image.open(buffer)
-        #img.thumbnail((256, 256))
         left = (img.width - 256) // 2
         top = (img.height - 256) // 2
         right = left + 256
