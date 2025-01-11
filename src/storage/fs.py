@@ -5,7 +5,6 @@ import schemas
 import os
 from PIL import Image
 import io
-from fastapi import HTTPException
 
 
 class IndexationImage:

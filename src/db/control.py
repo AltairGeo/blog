@@ -58,18 +58,21 @@ class UserORM:
                 res = await session.execute(stmnt)
                 usr = res.scalars().first()
                 if usr:
+                    print(f"OLD: {usr.avatar_path}")
+                    print(f"NEW: {image_hash.image_hash}")
                     if usr.avatar_path != None:
-                        inx = ImageFS()
+                        if usr.avatar_path != image_hash.image_hash:
+                            inx = ImageFS()
+                            try:
+                                inx.DelOldAvatar(usr.avatar_path)
+                            except Exception as e:
+                                print(f"WARNING!: {e}")
                         try:
-                            inx.DelOldAvatar(usr.avatar_path)
+                            usr.avatar_path = image_hash.image_hash
+                            await session.commit()
+                            return "Successfully!"
                         except Exception as e:
-                            print(f"WARNING!: {e}")
-                    try:
-                        usr.avatar_path = image_hash.image_hash
-                        await session.commit()
-                        return "Successfully!"
-                    except Exception as e:
-                        await session.rollback()
+                            await session.rollback()
                 else:
                     raise exceptions.UserNotFound
 

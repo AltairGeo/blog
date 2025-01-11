@@ -23,7 +23,8 @@ class Settings:
         # Получение секретов из переменной среды
         self.jwt_secret = os.getenv("JWT_SECRET")
         self.jwt_algo = ["HS256"]
-        self.db_url= os.getenv("DB_URL") # user:password@ip:port/db
+        self.db_url= os.getenv("DB_URL") # user:password@ip:port/db 
+        # postgresql+asyncpg://user:password@ip:port/db
 
         # Чтение конфига и получение настроек
         conf = ConfigParser()
