@@ -3,11 +3,17 @@ from sqlalchemy import String, ForeignKey
 from typing import List
 from datetime import datetime
 
+#  _____     _     _
+# |_   _|_ _| |__ | | ___  ___
+#   | |/ _` | '_ \| |/ _ \/ __|
+#   | | (_| | |_) | |  __/\__ \
+#   |_|\__,_|_.__/|_|\___||___/
+#
 
 class Base(DeclarativeBase):
     pass
 
-class Users(Base):
+class Users(Base): # Users table
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -18,7 +24,7 @@ class Users(Base):
     posts: Mapped[List["Posts"]] = relationship(back_populates="author")
 
 
-class Posts(Base):
+class Posts(Base): # Table for posts
     __tablename__ = "posts"
 
     id: Mapped[int] = mapped_column(primary_key=True)

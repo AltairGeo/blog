@@ -1,6 +1,13 @@
+#   ___  ____  __  __        ____ _
+#  / _ \|  _ \|  \/  |      / ___| | __ _ ___ ___  ___  ___
+# | | | | |_) | |\/| |_____| |   | |/ _` / __/ __|/ _ \/ __|
+# | |_| |  _ <| |  | |_____| |___| | (_| \__ \__ \  __/\__ \
+#  \___/|_| \_\_|  |_|      \____|_|\__,_|___/___/\___||___/
+#
+
 from db.models import Users, Posts
 from db.core import async_session_factory
-from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash, LiteUser
+from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash, LiteUser, ChangePass, MyBaseInfo
 from sqlalchemy import select
 from security import Hashing, JwT
 from db import Errs
@@ -11,13 +18,13 @@ from typing import List
 from storage.fs import ImageFS
 
 
-def page_offset_calculation(page: int) -> int:
+def page_offset_calculation(page: int) -> int: # offset calculation for paging
     if page <= 0:
         raise exceptions.PageLessZero
     return ((page * 5) - 5)
 
 
-class UserORM:
+class UserORM: # Класс для работы с пользователями
     @staticmethod
     async def UserAdd(user: UserReg) -> str:
         user.password = Hashing.create_hash(user.password)
@@ -98,7 +105,41 @@ class UserORM:
                 raise exceptions.UserNotFound
             return LiteUser(id=id, nickname=res.nickname)
         
-class PostORM:
+
+    @staticmethod
+    async def ChangePassword(data: ChangePass):
+        old_hash_password = Hashing.create_hash(data.old_password.strip())
+        new_hash_password = Hashing.create_hash(data.new_password.strip()) # Create hashs of passwords
+        decoded_token = JwT.decodeJWT(Token(token=data.token)) # Decoding token
+        async with async_session_factory() as session:
+            await session.begin()
+            query = select(Users).filter_by(email=decoded_token.email) 
+            result = await session.execute(query)
+            result = result.scalars().first()
+            if result is None:
+                raise exceptions.UserNotFound
+            if result.email == decoded_token.email: 
+                if result.password == old_hash_password:
+                    result.password = new_hash_password
+                    await session.commit()
+
+    @staticmethod
+    async def GetMyInfo(token: Token) -> MyBaseInfo:
+        decoded_token = JwT.decodeJWT(token=token)
+        async with async_session_factory() as session:
+            query = select(Users).filter_by(id=decoded_token.id)
+            result = await session.execute(query)
+            result = result.scalars().first()
+            return MyBaseInfo(
+                id=result.id,
+                email=result.email,
+                nickname=result.nickname
+            )
+
+
+
+
+class PostORM: # Класс для работы с постами
     @staticmethod
     async def AddPost(post: CreatePost):
         decoded_token = JwT.decodeJWT(post.token)
@@ -114,7 +155,6 @@ class PostORM:
                 return "Successfully!"
         else:
             raise exceptions.TokenWasExpire
-        
     
     @staticmethod
     async def GetLastTenPosts() -> List[Posts]:
@@ -125,7 +165,6 @@ class PostORM:
             if result == []:
                 raise exceptions.PostsNotFound
             return result
-        
 
     @staticmethod
     async def GetLastPagePosts(page: int) -> List[Posts]:

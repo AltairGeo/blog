@@ -1,3 +1,10 @@
+#  ____ _____ ___  ____      _    ____ _____
+# / ___|_   _/ _ \|  _ \    / \  / ___| ____|
+# \___ \ | || | | | |_) |  / _ \| |  _|  _|
+#  ___) || || |_| |  _ <  / ___ \ |_| | |___
+# |____/ |_| \___/|_| \_\/_/   \_\____|_____|
+#
+
 from config import settings
 import hashlib
 from random import randint
@@ -7,7 +14,7 @@ from PIL import Image
 import io
 
 
-class IndexationImage:
+class IndexationImage: # Work with image-index
     def __init__(self):
         self.__fraction_ratio = settings.fraction_ratio
 
@@ -28,7 +35,7 @@ class IndexationImage:
         return {"index": res[0], "hash": res[1]}
 
 
-class ImageFS(IndexationImage):
+class ImageFS(IndexationImage): # Save, delete, get_path for image
     def __init__(self):
         super().__init__()
         self.__def_path = settings.img_storage_path

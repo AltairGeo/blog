@@ -1,3 +1,5 @@
+# External exceptions(half-used)
+
 class UserAlreadyCreate(Exception):
     def __init__(self):
         super().__init__("User has already been created!")

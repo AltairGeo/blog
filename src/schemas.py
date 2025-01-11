@@ -1,3 +1,16 @@
+#  ____            _             _   _
+# |  _ \ _   _  __| | __ _ _ __ | |_(_) ___
+# | |_) | | | |/ _` |/ _` | '_ \| __| |/ __|
+# |  __/| |_| | (_| | (_| | | | | |_| | (__
+# |_|    \__, |\__,_|\__,_|_| |_|\__|_|\___|
+#        |___/
+#  ____       _
+# / ___|  ___| |__   ___ _ __ ___   __ _ ___
+# \___ \ / __| '_ \ / _ \ '_ ` _ \ / _` / __|
+#  ___) | (__| | | |  __/ | | | | | (_| \__ \
+# |____/ \___|_| |_|\___|_| |_| |_|\__,_|___/
+#
+
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
@@ -14,7 +27,6 @@ class Login(BaseModel):
     email: EmailStr
     password: str
 
-
 class Token(BaseModel):
     token: str
 
@@ -29,10 +41,8 @@ class BasePost(BaseModel):
     text: str
     created_at: datetime = datetime.now()
 
-
 class Post(BasePost):
     author_id: int
-
 
 class CreatePost(BaseModel):
     title: str
@@ -44,6 +54,15 @@ class AvatarHashGenerate(BaseModel):
     id: int
     email: EmailStr
 
-
 class AvatarHash(BaseModel):
     image_hash: str
+
+class ChangePass(BaseModel):
+    old_password: str
+    new_password: str
+    token: str
+
+class MyBaseInfo(BaseModel):
+    id: int
+    email: EmailStr
+    nickname: str
