@@ -1,4 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, relationship
+from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy import String, ForeignKey
 from typing import List
 from datetime import datetime
@@ -10,7 +11,7 @@ from datetime import datetime
 #   |_|\__,_|_.__/|_|\___||___/
 #
 
-class Base(DeclarativeBase):
+class Base(AsyncAttrs, DeclarativeBase):
     pass
 
 class Users(Base): # Users table

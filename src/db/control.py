@@ -34,11 +34,14 @@ class UserORM: # Класс для работы с пользователями
             query = select(Users).filter(Users.email==user.email.strip())
             result = await session.execute(query)
             if result.fetchall() != []:
+                await session.rollback()
                 raise Errs.UserAlreadyCreate()
             else:
                 session.add(Usr)
                 await session.commit()
-                return "Successfully!"
+                user_get = await session.execute(select(Users).filter_by(email=user.email.strip()))
+                user_get = user_get.scalars().first()
+                return JwT.generateJWT(UserFToken(id=user_get.id, email=user.email, expires_at=(datetime.now() + timedelta(hours=8))))
 
 
     @staticmethod
