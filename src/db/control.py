@@ -162,7 +162,7 @@ class PostORM: # Класс для работы с постами
     @staticmethod
     async def GetLastTenPosts() -> List[Posts]:
         async with async_session_factory() as session:
-            stmnt = select(Posts).order_by(Posts.created_at.desc()).limit(20)
+            stmnt = select(Posts).order_by(Posts.created_at.desc()).limit(10)
             result = await session.execute(stmnt)
             result = result.scalars().all()
             if result == []:
