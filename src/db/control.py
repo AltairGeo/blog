@@ -16,6 +16,7 @@ import exceptions
 from datetime import datetime, timedelta
 from typing import List
 from storage.fs import ImageFS
+from db.controlExt.UserProfileExt import UserProfileExt
 
 
 def page_offset_calculation(page: int) -> int: # offset calculation for paging
@@ -24,7 +25,7 @@ def page_offset_calculation(page: int) -> int: # offset calculation for paging
     return ((page * 5) - 5)
 
 
-class UserORM: # Класс для работы с пользователями
+class UserORM(UserProfileExt): # Класс для работы с пользователями
     @staticmethod
     async def UserAdd(user: UserReg) -> str:
         user.password = Hashing.create_hash(user.password)

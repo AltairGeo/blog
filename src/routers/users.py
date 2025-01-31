@@ -19,7 +19,6 @@ import exceptions
 from db import Errs
 from typing import Annotated
 from db.control import UserORM
-from db.core import create_tables
 from storage import fs
 import os
 
@@ -32,6 +31,7 @@ fss = fs.ImageFS()
 # @router.get("/create_tables")
 # async def tables():
 #         await create_tables() # Not for prod!
+
 
 #  ____    _    ____  _____
 # | __ )  / \  / ___|| ____|
@@ -120,3 +120,8 @@ async def get_avatar_by_token(token: schemas.Token):
             raise HTTPException(500, "Avatar not found!")
     else:
         raise exceptions.TokenWasExpire
+
+
+@router.get('/get_user_posts')
+async def get_user_posts(user_id: int):
+    return await UserORM.getUserPosts(user_id=user_id)

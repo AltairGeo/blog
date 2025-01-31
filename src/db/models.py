@@ -23,7 +23,7 @@ class Users(Base): # Users table
     password: Mapped[str]
     avatar_path: Mapped[str] = mapped_column(nullable=True)
     posts: Mapped[List["Posts"]] = relationship(back_populates="author")
-
+    role: Mapped[str] = mapped_column(nullable=True, unique=False)
 
 class Posts(Base): # Table for posts
     __tablename__ = "posts"
