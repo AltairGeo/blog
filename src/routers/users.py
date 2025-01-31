@@ -29,9 +29,9 @@ router = APIRouter(prefix="/users", tags=["Users"])
 fss = fs.ImageFS()
 
 
-@router.get("/create_tables")
-async def tables():
-        await create_tables() # Not for prod!
+# @router.get("/create_tables")
+# async def tables():
+#         await create_tables() # Not for prod!
 
 #  ____    _    ____  _____
 # | __ )  / \  / ___|| ____|
@@ -76,21 +76,31 @@ async def chng_pass(data: schemas.ChangePass):
 # /_/   \_\_/ \__,_|\__\__,_|_|
 #
 
+
 @router.post("/upload_avatar") # загрузить аватарку
 async def upload_avatar(token: Annotated[str, Form()], image: UploadFile = File(...)):
     buffer = await image.read()
     decoded = security.JwT.decodeJWT(token=schemas.Token(token=token)) # декодирование токена
-
-    if security.JwT.check_for_expire(decoded.expires_at): # проверка срока годности токена
-        hash_image = schemas.AvatarHash(image_hash=fss.AvatarSave(schemas.AvatarHashGenerate(id=decoded.id, email=decoded.email), image=buffer))
-        return await UserORM.UserAvatarChange(image_hash=hash_image, token=schemas.Token(token=token))
-    else:
-         raise exceptions.TokenWasExpire
+    try:
+        if security.JwT.check_for_expire(decoded.expires_at): # проверка срока годности токена
+            hash_image = schemas.AvatarHash(
+                image_hash=fss.AvatarSave( # Сохранение изображения
+                    schemas.AvatarHashGenerate(id=decoded.id, email=decoded.email), # Генерация хеша изображения для хранения в бд 
+                    image=buffer)
+                )
+            res = await UserORM.UserAvatarChange(image_hash=hash_image, token=schemas.Token(token=token)) # Сохранение в бд
+            return res
+        else:
+            raise exceptions.TokenWasExpire
+    except Exception as e:
+        raise HTTPException(e.status_code, e.detail)
     
 
 @router.get("/avatar_by_id") # Аватарка по айди
 async def get_avatar_by_id(ids: int):
     image_hash = await UserORM.GetUserAvatarHashById(id=ids)
+    if image_hash is None:
+        raise HTTPException(400, "Avatar doesn't exist! :(")
     image_path = fss.OrganizePath(image_hash)
     if os.path.exists(image_path):    
         return FileResponse(image_path)

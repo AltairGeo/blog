@@ -7,7 +7,7 @@
 
 from db.models import Users, Posts
 from db.core import async_session_factory
-from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash, LiteUser, ChangePass, MyBaseInfo
+from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash, LiteUser, ChangePass, MyBaseInfo, Post
 from sqlalchemy import select
 from security import Hashing, JwT
 from db import Errs
@@ -61,30 +61,33 @@ class UserORM: # Класс для работы с пользователями
 
     @staticmethod
     async def UserAvatarChange(image_hash: AvatarHash, token: Token):
-        if JwT.check_token_for_expire(token):
+        try:
+            if not JwT.check_token_for_expire(token):
+                raise exceptions.TokenWasExpire
+
             decode = JwT.decodeJWT(token)
             async with async_session_factory() as session:
                 stmnt = select(Users).filter_by(id=decode.id)
                 res = await session.execute(stmnt)
                 usr = res.scalars().first()
-                if usr:
-                    print(f"OLD: {usr.avatar_path}")
-                    print(f"NEW: {image_hash.image_hash}")
-                    if usr.avatar_path != None:
-                        if usr.avatar_path != image_hash.image_hash:
-                            inx = ImageFS()
-                            try:
-                                inx.DelOldAvatar(usr.avatar_path)
-                            except Exception as e:
-                                print(f"WARNING!: {e}")
-                        try:
-                            usr.avatar_path = image_hash.image_hash
-                            await session.commit()
-                            return "Successfully!"
-                        except Exception as e:
-                            await session.rollback()
-                else:
+
+                if not usr:
                     raise exceptions.UserNotFound
+
+                if usr.avatar_path and usr.avatar_path != image_hash.image_hash:
+                    try:
+                        inx = ImageFS()
+                        inx.DelOldAvatar(usr.avatar_path)
+                    except Exception as e:
+                        print(f"WARNING!: {e}")
+
+                usr.avatar_path = image_hash.image_hash
+                await session.commit()
+                return "Successfully!"
+
+        except Exception as e:
+            await session.rollback()
+            raise HTTPException(status_code=500, detail=str(e))
 
 
     @staticmethod
@@ -160,14 +163,26 @@ class PostORM: # Класс для работы с постами
             raise exceptions.TokenWasExpire
     
     @staticmethod
-    async def GetLastTenPosts() -> List[Posts]:
+    async def GetLastTenPosts() -> List[Post]:
         async with async_session_factory() as session:
             stmnt = select(Posts).order_by(Posts.created_at.desc()).limit(10)
             result = await session.execute(stmnt)
             result = result.scalars().all()
             if result == []:
                 raise exceptions.PostsNotFound
-            return result
+
+            final = []
+            for i in result:
+                await session.refresh(i, attribute_names=['author'])
+                username = i.author.nickname
+
+                final.append(Post(  id=i.id,
+                                    title=i.title, text=i.text,
+                                    created_at=i.created_at,
+                                    author_id=i.author_id,
+                                    author_name=username
+                                ))
+            return final
 
     @staticmethod
     async def GetLastPagePosts(page: int) -> List[Posts]:
@@ -179,13 +194,22 @@ class PostORM: # Класс для работы с постами
             result = result.scalars().all()
             if result == []:
                 raise exceptions.PostsNotFound
-            print(result)
             return result
     
     @staticmethod
-    async def GetPostById(id: int) -> Posts:
+    async def GetPostById(id: int) -> Post:
         async with async_session_factory() as session:
             stmnt = select(Posts).filter_by(id=id)
             res = await session.execute(stmnt)
-            return res.scalars().first()
+            result = res.scalars().first()
+            await session.refresh(result, attribute_names=['author'])
+            username = result.author.nickname
+            return Post(
+                id=result.id,
+                title=result.title,
+                text=result.text,
+                created_at=result.created_at,
+                author_id=result.author_id,
+                author_name=username,
+            )
         

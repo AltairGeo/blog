@@ -43,6 +43,7 @@ class BasePost(BaseModel):
 
 class Post(BasePost):
     author_id: int
+    author_name: str
 
 class CreatePost(BaseModel):
     title: str
