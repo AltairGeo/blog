@@ -12,7 +12,7 @@
 #
 
 from pydantic import BaseModel, EmailStr
-from datetime import datetime
+from datetime import datetime, timezone
 
 class UserReg(BaseModel):
     nickname: str
@@ -48,7 +48,7 @@ class Post(BasePost):
 class CreatePost(BaseModel):
     title: str
     text: str
-    created_at: datetime = datetime.now()
+    created_at: datetime = datetime.now(timezone.utc)
     token: Token
 
 class AvatarHashGenerate(BaseModel):

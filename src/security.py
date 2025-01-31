@@ -2,7 +2,7 @@ import hashlib
 import jwt
 import schemas
 from config import settings
-from datetime import datetime
+from datetime import datetime, timezone
 import exceptions
 
 class Hashing:
@@ -38,14 +38,14 @@ class JwT:
     @staticmethod
     def check_token_for_expire(token: schemas.Token):
         decoded = JwT.decodeJWT(token=token)
-        if decoded.expires_at > datetime.now():
+        if decoded.expires_at > datetime.now(timezone.utc):
             return True
         else:
             return False
         
     @staticmethod
     def check_for_expire(date: datetime):
-        if date > datetime.now():
+        if date > datetime.now(timezone.utc):
             return True
         else:
             return False

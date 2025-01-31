@@ -13,7 +13,7 @@ from security import Hashing, JwT
 from db import Errs
 from fastapi import HTTPException
 import exceptions
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
 from storage.fs import ImageFS
 from db.controlExt.UserProfileExt import UserProfileExt
@@ -42,7 +42,7 @@ class UserORM(UserProfileExt): # Класс для работы с пользо�
                 await session.commit()
                 user_get = await session.execute(select(Users).filter_by(email=user.email.strip()))
                 user_get = user_get.scalars().first()
-                return JwT.generateJWT(UserFToken(id=user_get.id, email=user.email, expires_at=(datetime.now() + timedelta(hours=8))))
+                return JwT.generateJWT(UserFToken(id=user_get.id, email=user.email, expires_at=(datetime.now(timezone.utc) + timedelta(hours=8))))
 
 
     @staticmethod
@@ -56,7 +56,7 @@ class UserORM(UserProfileExt): # Класс для работы с пользо�
                 raise Errs.UserNotFound
             if result[0].email == user.email:
                 if result[0].password == hash_password:
-                    return JwT.generateJWT(UserFToken(id=result[0].id, email=user.email, expires_at=(datetime.now() + timedelta(hours=8))))
+                    return JwT.generateJWT(UserFToken(id=result[0].id, email=user.email, expires_at=(datetime.now(timezone.utc) + timedelta(hours=8))))
                 else:
                     raise HTTPException(400, "Uncorrect password!")
 
@@ -133,6 +133,8 @@ class UserORM(UserProfileExt): # Класс для работы с пользо�
     @staticmethod
     async def GetMyInfo(token: Token) -> MyBaseInfo:
         decoded_token = JwT.decodeJWT(token=token)
+        if not JwT.check_for_expire(decoded_token.expires_at):
+            raise exceptions.TokenWasExpire
         async with async_session_factory() as session:
             query = select(Users).filter_by(id=decoded_token.id)
             result = await session.execute(query)
