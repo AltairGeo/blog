@@ -2,6 +2,7 @@ from fastapi import HTTPException, APIRouter
 from db.control import PostORM
 import schemas
 from typing import List
+from security import JwT
 import exceptions
 
 #              ____           _
@@ -46,3 +47,12 @@ async def get_post_by_id(ids: int) -> schemas.Post:
         return result
     else:
         raise exceptions.PostNotFound
+
+
+@router.delete('/delete_post')
+async def delete_post(data: schemas.PostDelete):
+    if  JwT.check_token_for_expire(schemas.Token(token=data.token)):
+        res = await PostORM.DeletePostByID(data.post_id)
+        return res.rowcount
+    else:
+        raise exceptions.TokenWasExpire

@@ -8,7 +8,7 @@
 from db.models import Users, Posts
 from db.core import async_session_factory
 from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash, LiteUser, ChangePass, MyBaseInfo, Post
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from security import Hashing, JwT
 from db import Errs
 from fastapi import HTTPException
@@ -350,3 +350,15 @@ class PostORM:
                 author_name=username,
             )
         
+    @staticmethod
+    async def DeletePostByID(post_id: int):
+        """
+        Удаление поста по id
+        """
+        async with async_session_factory() as session:
+            query = delete(Posts).where(Posts.id == post_id)
+            res = await session.execute(query)
+            await session.commit()
+            return res
+
+

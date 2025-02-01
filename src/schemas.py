@@ -67,3 +67,7 @@ class MyBaseInfo(BaseModel):
     id: int
     email: EmailStr
     nickname: str
+
+class PostDelete(BaseModel):
+    token: str
+    post_id: int
