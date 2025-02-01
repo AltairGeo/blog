@@ -1,15 +1,3 @@
-#  _   _
-# | | | |___  ___ _ __ ___
-# | | | / __|/ _ \ '__/ __|
-# | |_| \__ \  __/ |  \__ \
-#  \___/|___/\___|_|  |___/
-#                 _                   _       _
-#   ___ _ __   __| |      _ __   ___ (_)_ __ | |_ ___
-#  / _ \ '_ \ / _` |_____| '_ \ / _ \| | '_ \| __/ __|
-# |  __/ | | | (_| |_____| |_) | (_) | | | | | |_\__ \
-#  \___|_| |_|\__,_|     | .__/ \___/|_|_| |_|\__|___/
-#                        |_|
-#
 from fastapi import APIRouter, HTTPException
 from fastapi import File, UploadFile, Form
 from fastapi.responses import FileResponse
@@ -23,22 +11,24 @@ from storage import fs
 import os
 
 
+#               _   _
+#              | | | |___  ___ _ __ ___
+#              | | | / __|/ _ \ '__/ __|
+#              | |_| \__ \  __/ |  \__ \
+#               \___/|___/\___|_|  |___/
+#                 _                   _       _
+#   ___ _ __   __| |      _ __   ___ (_)_ __ | |_ ___
+#  / _ \ '_ \ / _` |_____| '_ \ / _ \| | '_ \| __/ __|
+# |  __/ | | | (_| |_____| |_) | (_) | | | | | |_\__ \
+#  \___|_| |_|\__,_|     | .__/ \___/|_|_| |_|\__|___/
+#                        |_|
+#
+
 router = APIRouter(prefix="/users", tags=["Users"])
 
 fss = fs.ImageFS()
 
-
-# @router.get("/create_tables")
-# async def tables():
-#         await create_tables() # Not for prod!
-
-
-#  ____    _    ____  _____
-# | __ )  / \  / ___|| ____|
-# |  _ \ / _ \ \___ \|  _|
-# | |_) / ___ \ ___) | |___
-# |____/_/   \_\____/|_____|
-
+# Base users end-points
 
 @router.post("/login")
 async def login(loginData: schemas.Login):
@@ -69,13 +59,7 @@ async def chng_pass(data: schemas.ChangePass):
     await UserORM.ChangePassword(data=data)
     
 
-#     _             _
-#    / \__   ____ _| |_ __ _ _ __
-#   / _ \ \ / / _` | __/ _` | '__|
-#  / ___ \ V / (_| | || (_| | |
-# /_/   \_\_/ \__,_|\__\__,_|_|
-#
-
+# end-points for work with avatar
 
 @router.post("/upload_avatar") # загрузить аватарку
 async def upload_avatar(token: Annotated[str, Form()], image: UploadFile = File(...)):
