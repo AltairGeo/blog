@@ -28,3 +28,7 @@ class InvalidID(HTTPException):
 class PostNotFound(HTTPException):
     def __init__(self):
         super().__init__(404, detail="Post not found 0_o!")
+
+class IsNotYourPost(HTTPException):
+    def __init__(self):
+        super().__init__(400, detail="Is not your post!")

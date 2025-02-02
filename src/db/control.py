@@ -7,7 +7,7 @@
 
 from db.models import Users, Posts
 from db.core import async_session_factory
-from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash, LiteUser, ChangePass, MyBaseInfo, Post
+from schemas import UserReg, Login, UserFToken, Token, CreatePost, AvatarHash, LiteUser, ChangePass, MyBaseInfo, Post, ChangePost
 from sqlalchemy import select, delete
 from security import Hashing, JwT
 from db import Errs
@@ -305,7 +305,6 @@ class PostORM:
             List[Post]
         """
         offset = page_offset_calculation(page)
-        print(offset)
         async with async_session_factory() as session:
             stmnt = select(Posts).order_by(Posts.created_at.desc()).offset(offset=offset).limit(20) 
             result = await session.execute(stmnt) # Сложный запрос на получения 20 постов по страницам
@@ -363,4 +362,26 @@ class PostORM:
             await session.commit()
             return res
 
+    @staticmethod
+    async def ChangePost(data: ChangePost):
+        try:
+            decoded_token = JwT.decodeJWT(Token(token=data.token))
+            if not JwT.check_for_expire(decoded_token.expires_at):
+                raise exceptions.TokenWasExpire
+            async with async_session_factory() as session:
+                stmnt = select(Posts).filter_by(id=data.post_id)
+                res = await session.execute(stmnt)
+                res = res.scalar_one()  
+                if not res:
+                    raise exceptions.PostNotFound
+                if decoded_token.id != res.author_id:
+                    raise exceptions.IsNotYourPost
+                else:
+                    res.text = data.text
+                    res.title = data.title
+                    await session.commit()
+                    return {"message": "Succesfully!"}
+        except Exception as e:
+            print(e)
+            raise e
 

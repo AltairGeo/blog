@@ -71,3 +71,8 @@ class MyBaseInfo(BaseModel):
 class PostDelete(BaseModel):
     token: str
     post_id: int
+
+class ChangePost(Token):
+    post_id: int
+    title: str
+    text: str

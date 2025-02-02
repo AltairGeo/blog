@@ -56,3 +56,7 @@ async def delete_post(data: schemas.PostDelete):
         return res.rowcount
     else:
         raise exceptions.TokenWasExpire
+    
+@router.put('/change_post')
+async def change_post(data: schemas.ChangePost):
+    return await PostORM.ChangePost(data=data)
