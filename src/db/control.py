@@ -339,6 +339,8 @@ class PostORM:
             stmnt = select(Posts).filter_by(id=id) 
             res = await session.execute(stmnt) # получает пост по id
             result = res.scalars().first()
+            if not result:
+                raise exceptions.PostNotFound
             await session.refresh(result, attribute_names=['author']) # подтягиваем данные автора
             username = result.author.nickname
             return Post( # создаём схему поста и возращаем
