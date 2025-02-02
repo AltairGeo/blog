@@ -10,10 +10,10 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "src")))
 
 # Импортируем настройки
-from src.config import settings
+from old_src.config import settings
 
 # Импортируем базовый класс моделей
-from db.models import Base
+from old_src.db.models import Base
 
 target_metadata = Base.metadata
 

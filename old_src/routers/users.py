@@ -59,8 +59,6 @@ async def chng_pass(data: schemas.ChangePass):
     await UserORM.ChangePassword(data=data)
     
 
-# end-points for work with avatar
-
 @router.post("/upload_avatar") # загрузить аватарку
 async def upload_avatar(token: Annotated[str, Form()], image: UploadFile = File(...)):
     buffer = await image.read()
