@@ -13,6 +13,7 @@ class UserProfileExt():
     
     P.S UserORM наследует данный класс
     """
+    
     @staticmethod
     async def getUserPosts(user_id: int) -> List[Posts]:
         """
