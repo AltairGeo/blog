@@ -3,7 +3,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
 from db.core import ModelBase
 from schemas.tables import UsersSchema
-from posts import PostsModel
 
 class UsersModel(ModelBase): # Users table
     __tablename__ = "users"

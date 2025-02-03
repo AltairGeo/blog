@@ -1,3 +1,3 @@
+from api.users import router as users
 
-
-all_routers = []
+all_routers = [users,]

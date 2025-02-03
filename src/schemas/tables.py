@@ -1,4 +1,4 @@
-from base import BaseSchema
+from schemas.base import BaseSchema
 from pydantic import EmailStr
 from typing import Optional
 from datetime import datetime

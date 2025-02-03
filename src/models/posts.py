@@ -3,7 +3,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from db.core import ModelBase
 from schemas.tables import PostsSchema
-from users import UsersModel
 
 
 class PostsModel(ModelBase): # Table for posts
