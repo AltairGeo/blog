@@ -5,9 +5,9 @@ from sqlalchemy import insert, update, delete, select
 class SQLAlchemyRepository(AbstractRepo):
     model = None
 
-    async def create(self, data: dict) -> int:
+    async def create(self, data: dict):
         async with async_session_maker() as session:
-            stmt = insert(self.model).values(**data).returning(self.model.id)
+            stmt = insert(self.model).values(**data).returning(self.model)
             res = await session.execute(stmt)
             await session.commit()
             return res.scalar_one()  
