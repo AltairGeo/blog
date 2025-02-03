@@ -1,13 +1,29 @@
+import exceptions.base
+import exceptions.users
 from repositories.users import UsersRepository
+import schemas
+import exceptions
+import security
 
 
 class UsersService:
     def __init__(self, users_repo: UsersRepository):
         self.users_repo: UsersRepository = users_repo()
 
-    async def GetAllUsers(self):
-        """
-        Get all users in db
-        """
-        users = await self.users_repo.find_all()
-        return users
+    async def ChangePassword(self, ch_data: schemas.users.ChangePasswordSchema) -> bool:
+        security.token.check_token_to_expire(schemas.token.Token(token=ch_data.token))
+        if ch_data.old_password == ch_data.new_password:
+            raise exceptions.users.SamePasswords
+        resp = await self.users_repo.update(
+            {
+                "email": ch_data.email,
+                "password": security.utils.create_hash(ch_data.new_password)
+            },
+            email=ch_data.email,
+            password=security.utils.create_hash(ch_data.old_password)
+        )
+        if not resp:
+            raise exceptions.users.UncorrectEmailOrPassword
+        
+        if resp:
+            return {"detail": "Succesfully!"}

@@ -9,7 +9,7 @@ router = APIRouter(
     tags=["Users"]
 )
 
-@router.post('/all')
-async def users_all(users_service: Annotated[UsersService, Depends(users_service)]):
-    resp = await users_service.GetAllUsers()
+@router.post('/change_password')
+async def change_password(data: schemas.users.ChangePasswordSchema, users_service: Annotated[UsersService, Depends(users_service)]):
+    resp = await users_service.ChangePassword(ch_data=data)
     return resp

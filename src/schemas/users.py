@@ -9,3 +9,10 @@ class RegisterSchema(BaseSchema):
 class LoginSchema(BaseSchema):
     email: EmailStr
     password: str
+
+
+class ChangePasswordSchema(BaseSchema):
+    token: str
+    email: EmailStr
+    old_password: str
+    new_password: str

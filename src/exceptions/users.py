@@ -11,3 +11,7 @@ class UserNotFound(Base):
 class UncorrectEmailOrPassword(Base):
     def __init__(self):
         super().__init__(400, "Incorrect email or password!")
+
+class SamePasswords(Base):
+    def __init__(self):
+        super().__init__(400, "You specified the same passwords")

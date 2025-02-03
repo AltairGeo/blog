@@ -2,6 +2,7 @@ import exceptions.token
 from settings import AppSettings
 import jwt
 import exceptions
+from datetime import datetime, timezone
 from schemas.token import Token, TokenData
 
 
@@ -31,4 +32,11 @@ def decode_jwt_token(token: Token) -> TokenData:
         print(e)
         raise exceptions.token.DecodingWasFailed
 
+    
+def check_token_to_expire(token: Token):
+    decoded = decode_jwt_token(token=token)
+    if datetime.fromisoformat(decoded.expires_at) > datetime.now(timezone.utc):
+        return True
+    else:
+        raise exceptions.token.TokenWasExpired
     
