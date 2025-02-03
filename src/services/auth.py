@@ -3,7 +3,7 @@ from repositories.users import UsersRepository
 import schemas
 import exceptions
 import security
-from models.users import UsersModel
+from models.models import UsersModel
 from settings import AppSettings
 from datetime import datetime, timezone, timedelta
 

@@ -1,2 +1,1 @@
-from .posts import PostsModel
-from .users import UsersModel
+from . import models

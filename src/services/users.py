@@ -4,7 +4,7 @@ from repositories.users import UsersRepository
 import schemas
 import exceptions
 import security
-from models.users import UsersModel
+from models.models import UsersModel
 
 
 class UsersService:

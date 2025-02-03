@@ -27,3 +27,7 @@ class PostsService():
                 "created_at": datetime.now(timezone.utc).replace(tzinfo=None)
             }
         )
+
+    async def GetLastPosts(self):
+        resp = await self.posts_repo.get_ten_lasts()
+        return resp
