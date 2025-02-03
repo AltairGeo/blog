@@ -15,3 +15,9 @@ router = APIRouter(
 async def register(data: RegisterSchema, auth_service: Annotated[AuthService, Depends(auth_service)]) -> schemas.token.Token:
     resp = await auth_service.Register(data)
     return resp
+
+
+@router.post('/login')
+async def login(data: schemas.users.LoginSchema,
+                auth_service: Annotated[AuthService, Depends(auth_service)]) -> schemas.token.Token:
+    return await auth_service.Login(data=data)

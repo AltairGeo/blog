@@ -3,8 +3,6 @@ from repositories.users import UsersRepository
 import schemas
 import exceptions
 import security
-import security.token
-import security.utils
 from models.users import UsersModel
 from settings import AppSettings
 from datetime import datetime, timezone, timedelta
@@ -25,15 +23,23 @@ class AuthService:
         user_dict["password"] = security.utils.create_hash(user_dict["password"]) # Hashing password
         resp: UsersModel  = await self.users_repo.create(user_dict)
         user_schema = resp.to_schema()
-        return security.token.generate_jwt_token(
-            schemas.token.TokenData(
-                id=user_schema.id,
-                email=user_schema.email,
-                expires_at= (datetime.now(timezone.utc) + timedelta(hours=AppSettings.token_life_time)).isoformat() # Time to expire token
-            )
+        return security.utils.token_from_user_schema(
+            schema=user_schema
         )
-        
+    
     async def Login(self, data: schemas.users.LoginSchema) -> schemas.token.Token:
-        ...
+        """
+        Login.
+        """
+        user: UsersModel = await self.users_repo.find_one(email=data.email)
+        if not user:
+            raise exceptions.users.UserNotFound
+        hash_pass = security.utils.create_hash(data.password)
+        user = user.to_schema()
+
+        if user.password == hash_pass:
+            return security.utils.token_from_user_schema(user)
+        else:
+            raise exceptions.users.UncorrectEmailOrPassword
 
         
