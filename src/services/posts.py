@@ -6,6 +6,8 @@ from schemas.token import Token
 from datetime import datetime, timezone
 import security
 import exceptions
+from models.models import PostsModel
+from schemas.posts import DeletePostSchema
 
 
 class PostsService():
@@ -31,3 +33,17 @@ class PostsService():
     async def GetLastPosts(self):
         resp = await self.posts_repo.get_ten_lasts()
         return resp
+    
+    async def DeletePost(self, data: DeletePostSchema):
+        security.token.check_token_to_expire(Token(token=data.token))
+        decoded = security.token.decode_jwt_token(Token(token=data.token))
+
+        post: PostsModel = await self.posts_repo.find_one(id=data.id)
+
+        if not post:
+            raise exceptions.posts.PostNotFound
+        
+        if post.author_id != decoded.id:
+            raise exceptions.posts.ItsNotYour
+        
+        return await self.posts_repo.delete(id=data.id)

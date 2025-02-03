@@ -14,3 +14,7 @@ class PostToClient(BaseSchema):
     created_at: datetime = datetime.now()
     author_id: int
     author_name: str
+
+class DeletePostSchema(BaseSchema):
+    id: int
+    token: str

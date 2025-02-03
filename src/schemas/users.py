@@ -1,5 +1,6 @@
 from schemas.base import BaseSchema
 from pydantic import EmailStr
+from typing import Any
 
 class RegisterSchema(BaseSchema):
     nickname: str
@@ -21,3 +22,4 @@ class BaseInfo(BaseSchema):
     id: int
     email: EmailStr
     nickname: str
+    role: Any

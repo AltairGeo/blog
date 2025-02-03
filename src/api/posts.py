@@ -18,3 +18,7 @@ async def create_post(data: schemas.posts.CreatePost, posts_service: ann_posts_s
 @router.get('/get_last_posts')
 async def get_last_posts(posts_service: ann_posts_service):
     return await posts_service.GetLastPosts()
+
+@router.delete('/delete')
+async def delete_post(data: schemas.posts.DeletePostSchema, posts_service: ann_posts_service):
+    return await posts_service.DeletePost(data=data)

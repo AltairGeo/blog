@@ -38,5 +38,6 @@ class UsersService:
             id=resp.id,
             email=resp.email,
             nickname=resp.nickname,
+            role=resp.role,
         )
         

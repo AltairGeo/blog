@@ -7,3 +7,7 @@ class PostsNotFound(Base):
 class PostNotFound(Base):
     def __init__(self):
         super().__init__(404, "Post not found 0_o!")
+
+class ItsNotYour(Base):
+    def __init__(self):
+        super().__init__(400, "It's not your post •`_´•!")
