@@ -2,7 +2,7 @@ from repositories.alchemy_repo import SQLAlchemyRepository
 from models.models import UsersModel, PostsModel
 from db.core import async_session_maker
 from sqlalchemy import select
-from typing import List
+from typing import List, Optional
 
 class UsersRepository(SQLAlchemyRepository):
     model = UsersModel
@@ -15,3 +15,5 @@ class UsersRepository(SQLAlchemyRepository):
             await session.refresh(user, ['posts'])
             posts = user.posts
             return posts
+        
+    

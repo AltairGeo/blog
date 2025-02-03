@@ -25,3 +25,4 @@ async def get_self(token: schemas.token.Token, users_service: ann_users_service)
 @router.get('/get_user_posts')
 async def get_user_posts(user_id: int, users_service: ann_users_service) -> List[PostsSchema]:
     return await users_service.GetUserPosts(user_id=user_id)
+

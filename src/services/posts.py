@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 import security
 import exceptions
 from models.models import PostsModel
-from schemas.posts import DeletePostSchema
+from schemas.posts import DeletePostSchema, PostToClient
 
 
 class PostsService():
@@ -47,4 +47,18 @@ class PostsService():
             raise exceptions.posts.ItsNotYour
         
         return await self.posts_repo.delete(id=data.id)
-
+    
+    async def GetPostByID(self, post_id: int) -> PostToClient:
+        resp: PostsModel = await self.posts_repo.get_full_post(post_id=post_id)
+        
+        if not resp:
+            raise exceptions.posts.PostNotFound
+        
+        return PostToClient(
+            id=resp.id,
+            title=resp.title,
+            text=resp.text,
+            created_at=resp.created_at,
+            author_id=resp.author_id,
+            author_name=resp.author.nickname
+        )

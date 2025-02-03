@@ -4,6 +4,7 @@ from sqlalchemy import select
 from db.core import async_session_maker
 import exceptions
 import schemas
+from typing import Optional
 
 
 class PostsRepository(SQLAlchemyRepository):
@@ -34,3 +35,11 @@ class PostsRepository(SQLAlchemyRepository):
                 )
             return final
         
+    
+    async def get_full_post(self, post_id: int) -> Optional[PostsModel]:
+        async with async_session_maker() as session:
+            query = select(PostsModel).filter_by(id=post_id)
+            resp = await session.execute(query)
+            post = resp.scalar_one_or_none()
+            await session.refresh(post, attribute_names=["author"])
+            return post
