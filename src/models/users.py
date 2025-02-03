@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
 from db.core import ModelBase
 from schemas.tables import UsersSchema
-
+from posts import PostsModel
 
 class UsersModel(ModelBase): # Users table
     __tablename__ = "users"
@@ -13,7 +13,7 @@ class UsersModel(ModelBase): # Users table
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
     avatar_path: Mapped[str] = mapped_column(nullable=True)
-    posts: Mapped[List["Posts"]] = relationship(back_populates="author")
+    posts: Mapped[List["PostsModel"]] = relationship(back_populates="author")
     role: Mapped[str] = mapped_column(nullable=True, unique=False)
 
     def to_schema(self) -> UsersSchema:
