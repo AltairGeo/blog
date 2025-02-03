@@ -13,17 +13,17 @@ class PostsService():
         self.posts_repo: PostsRepository = posts_repo()
 
     async def CreatePost(self, data: CreatePost):
-        security.token.check_token_to_expire(Token(data.token))
-        decoded = security.token.decode_jwt_token(Token(data.token))
+        security.token.check_token_to_expire(Token(token=data.token))
+        decoded = security.token.decode_jwt_token(Token(token=data.token))
         UsrRepo = UsersRepository()
-        user = UsrRepo.find_one(id=decoded.id, email=decoded.email)
+        user = await UsrRepo.find_one(id=decoded.id, email=decoded.email)
         if not user:
             raise exceptions.users.UserNotFound 
-        self.posts_repo.create(
+        return await self.posts_repo.create(
             {
-                "title": data.title.strip(),
+                "title": data.title,
                 "text": data.text,
-                "author": user,
-                "created_at": datetime.now(timezone.utc)
+                "author_id": user.id,
+                "created_at": datetime.now(timezone.utc).replace(tzinfo=None)
             }
         )
