@@ -47,3 +47,4 @@ class PostsService():
             raise exceptions.posts.ItsNotYour
         
         return await self.posts_repo.delete(id=data.id)
+

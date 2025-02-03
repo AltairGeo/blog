@@ -5,6 +5,7 @@ import schemas
 import exceptions
 import security
 from models.models import UsersModel
+from typing import List
 
 
 class UsersService:
@@ -40,4 +41,12 @@ class UsersService:
             nickname=resp.nickname,
             role=resp.role,
         )
+    
+    async def GetUserPosts(self, user_id: int) -> List[schemas.tables.PostsSchema]:
+        posts = await self.users_repo.GetUserPosts(user_id=user_id)
+        posts.reverse()
+        if posts == []:
+            raise exceptions.posts.PostsNotFound
+        return [i.to_schema() for i in posts]
+        
         
