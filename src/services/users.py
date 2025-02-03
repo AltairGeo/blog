@@ -4,6 +4,7 @@ from repositories.users import UsersRepository
 import schemas
 import exceptions
 import security
+from models.users import UsersModel
 
 
 class UsersService:
@@ -27,3 +28,15 @@ class UsersService:
         
         if resp:
             return {"detail": "Succesfully!"}
+        
+    async def GetSelfByToken(self, token: schemas.token.Token) -> schemas.users.BaseInfo:
+        security.token.check_token_to_expire(token=token)
+        decoded = security.token.decode_jwt_token(token=token)
+        resp: UsersModel = await self.users_repo.find_one(id=decoded.id)
+        
+        return schemas.users.BaseInfo(
+            id=resp.id,
+            email=resp.email,
+            nickname=resp.nickname,
+        )
+        

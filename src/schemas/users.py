@@ -16,3 +16,8 @@ class ChangePasswordSchema(BaseSchema):
     email: EmailStr
     old_password: str
     new_password: str
+
+class BaseInfo(BaseSchema):
+    id: int
+    email: EmailStr
+    nickname: str
