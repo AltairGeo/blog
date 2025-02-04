@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
-from typing import Annotated
+from typing import Annotated, List
 from services.posts import PostsService
 from api.depends import posts_service
 import schemas
+
 
 ann_posts_service = Annotated[PostsService, Depends(posts_service)]
 
@@ -27,3 +28,8 @@ async def delete_post(data: schemas.posts.DeletePostSchema, posts_service: ann_p
 @router.get('/get_post')
 async def get_post(post_id: int, posts_service: ann_posts_service):
     return await posts_service.GetPostByID(post_id=post_id)
+
+
+@router.get('/get_last_posts_page')
+async def getting_last_posts_page(page: int, posts_service: ann_posts_service) -> List[schemas.posts.PostToClient]:
+    return await posts_service.GetLastPostsPage(page=page)

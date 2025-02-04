@@ -11,3 +11,7 @@ class PostNotFound(Base):
 class ItsNotYour(Base):
     def __init__(self):
         super().__init__(400, "It's not your post •`_´•!")
+
+class PageLessZero(Base):
+    def __init__(self):
+        super().__init__(400, "Page less zero!")

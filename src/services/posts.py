@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import security
 import exceptions
 from models.models import PostsModel
+from typing import List
 from schemas.posts import DeletePostSchema, PostToClient
 
 
@@ -62,3 +63,15 @@ class PostsService:
             author_id=resp.author_id,
             author_name=resp.author.nickname
         )
+    
+    async def GetLastPostsPage(self, page: int):
+        resp: List[PostsModel] = await self.posts_repo.get_last_page_posts(page=page)
+        final = []
+        for i in resp:
+            final.append(
+                PostToClient(
+                    **i.to_schema().model_dump(),
+                    author_name=i.author.nickname
+                )
+            )
+        return final

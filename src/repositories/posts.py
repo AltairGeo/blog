@@ -3,8 +3,9 @@ from models.models import PostsModel
 from sqlalchemy import select
 from db.core import async_session_maker
 import exceptions
+import utils
 import schemas
-from typing import Optional
+from typing import Optional, List
 
 
 class PostsRepository(SQLAlchemyRepository):
@@ -23,7 +24,7 @@ class PostsRepository(SQLAlchemyRepository):
             for i in result:
                 await session.refresh(i, attribute_names=['author'])
                 username = i.author.nickname
-                final.append(
+                final.append( # Create schemas
                     schemas.posts.PostToClient(
                         id=i.id,
                         title=i.title,
@@ -43,3 +44,19 @@ class PostsRepository(SQLAlchemyRepository):
             post = resp.scalar_one_or_none()
             await session.refresh(post, attribute_names=["author"])
             return post
+        
+    
+    async def get_last_page_posts(self, page: int) -> List[PostsModel]:
+        async with async_session_maker() as session:
+            offset = utils.posts.calculation_offset(page=page)
+            stmnt = select(PostsModel).order_by(PostsModel.created_at.desc()).offset(offset=offset).limit(10)
+            result = await session.execute(stmnt)
+            result = result.scalars().all()
+            
+            if result == []:
+                raise exceptions.posts.PostsNotFound
+            
+            for i in result:
+                await session.refresh(i, attribute_names=["author"])
+            
+            return result
