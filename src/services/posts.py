@@ -10,7 +10,7 @@ from models.models import PostsModel
 from schemas.posts import DeletePostSchema, PostToClient
 
 
-class PostsService():
+class PostsService:
     def __init__(self, posts_repo: PostsRepository):
         self.posts_repo: PostsRepository = posts_repo()
 

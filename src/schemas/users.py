@@ -1,6 +1,7 @@
 from schemas.base import BaseSchema
 from pydantic import EmailStr
 from typing import Any
+from schemas.token import Token
 
 class RegisterSchema(BaseSchema):
     nickname: str
@@ -23,3 +24,7 @@ class BaseInfo(BaseSchema):
     email: EmailStr
     nickname: str
     role: Any
+
+class AvatarUpload(BaseSchema):
+    token: Token
+    file: bytes

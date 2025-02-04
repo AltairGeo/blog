@@ -48,5 +48,18 @@ class UsersService:
         if posts == []:
             raise exceptions.posts.PostsNotFound
         return [i.to_schema() for i in posts]
+    
+
+    async def GetAvatar(self, token: schemas.token.Token | None = None, id: int | None = None   ):
+        if token:
+            decoded = security.token.decode_jwt_token(token=token)
+            user_id = decoded.id
+        elif id:
+            user_id = id
         
+        user: UsersModel = await self.users_repo.find_one(id=user_id)
+        if not user.avatar_path:
+            raise exceptions.users.AvatarNotFound
+
+        return user.avatar_path
         

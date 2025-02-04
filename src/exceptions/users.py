@@ -6,7 +6,7 @@ class UserAlreadyCreate(Base):
 
 class UserNotFound(Base):
     def __init__(self):
-        super().__init__(400, "User not found 0_o!")
+        super().__init__(404, "User not found 0_o!")
 
 class UncorrectEmailOrPassword(Base):
     def __init__(self):
@@ -15,3 +15,7 @@ class UncorrectEmailOrPassword(Base):
 class SamePasswords(Base):
     def __init__(self):
         super().__init__(400, "You specified the same passwords")
+
+class AvatarNotFound(Base):
+    def __init__(self):
+        super().__init__(404, "Avatar not found 0_o!")
