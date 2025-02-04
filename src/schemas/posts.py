@@ -18,3 +18,9 @@ class PostToClient(BaseSchema):
 class DeletePostSchema(BaseSchema):
     id: int
     token: str
+
+class ChangePostSchema(BaseSchema):
+    token: str
+    post_id: int
+    title: str
+    text: str

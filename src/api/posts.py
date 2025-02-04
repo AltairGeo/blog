@@ -33,3 +33,8 @@ async def get_post(post_id: int, posts_service: ann_posts_service):
 @router.get('/get_last_posts_page')
 async def getting_last_posts_page(page: int, posts_service: ann_posts_service) -> List[schemas.posts.PostToClient]:
     return await posts_service.GetLastPostsPage(page=page)
+
+
+@router.put("/change_post")
+async def change_post(new_post: schemas.posts.ChangePostSchema, posts_service: ann_posts_service):
+    return await posts_service.ChangePost(new_post)
