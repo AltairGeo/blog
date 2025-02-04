@@ -13,7 +13,7 @@ class S3Service:
         security.token.check_token_to_expire(token=data.token) # check token to expire
         decoded = security.token.decode_jwt_token(token=data.token) # decode token
         resp: str = await self.s3_repo.upload_avatar(key=str(decoded.id), file=data.file) # Upload avatar to s3
-        goida = await self.users_repo.update({"avatar_path": resp}, id=decoded.id, email=decoded.email)
+        update = await self.users_repo.update({"avatar_path": resp}, id=decoded.id, email=decoded.email)
         return resp
         
     

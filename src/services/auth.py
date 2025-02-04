@@ -11,6 +11,7 @@ class AuthService:
     def __init__(self, users_repo: UsersRepository) -> schemas.token.Token:
         self.users_repo: UsersRepository = users_repo()
 
+
     async def Register(self, user: schemas.users.RegisterSchema) -> schemas.token.Token:
         """
         Registration.
@@ -27,6 +28,7 @@ class AuthService:
             schema=user_schema
         )
     
+
     async def Login(self, data: schemas.users.LoginSchema) -> schemas.token.Token:
         """
         Login.
