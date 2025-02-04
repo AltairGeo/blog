@@ -1,0 +1,62 @@
+from repositories.alchemy_repo import SQLAlchemyRepository
+from models.models import PostsModel
+from sqlalchemy import select
+from db.core import async_session_maker
+import exceptions
+import utils
+import schemas
+from typing import Optional, List
+
+
+class PostsRepository(SQLAlchemyRepository):
+    model = PostsModel
+    
+    async def get_ten_lasts(self):
+        async with async_session_maker() as session:
+            stmnt = select(self.model).order_by(self.model.created_at.desc()).limit(10)
+            result = await session.execute(stmnt)
+            result = result.scalars().all()
+            if result == []:
+                raise exceptions.posts.PostsNotFound
+
+            final = []
+
+            for i in result:
+                await session.refresh(i, attribute_names=['author'])
+                username = i.author.nickname
+                final.append( # Create schemas
+                    schemas.posts.PostToClient(
+                        id=i.id,
+                        title=i.title,
+                        text=i.text,
+                        created_at=i.created_at,
+                        author_id=i.author_id,
+                        author_name=username
+                    )
+                )
+            return final
+        
+    
+    async def get_full_post(self, post_id: int) -> Optional[PostsModel]:
+        async with async_session_maker() as session:
+            query = select(PostsModel).filter_by(id=post_id)
+            resp = await session.execute(query)
+            post = resp.scalar_one_or_none()
+            await session.refresh(post, attribute_names=["author"])
+            return post
+        
+    
+    async def get_last_page_posts(self, page: int) -> List[PostsModel]:
+        async with async_session_maker() as session:
+            offset = utils.posts.calculation_offset(page=page)
+            stmnt = select(PostsModel).order_by(PostsModel.created_at.desc()).offset(offset=offset).limit(10)
+            result = await session.execute(stmnt)
+            result = result.scalars().all()
+            
+            if result == []:
+                raise exceptions.posts.PostsNotFound
+            
+            for i in result:
+                await session.refresh(i, attribute_names=["author"])
+            
+            return result
