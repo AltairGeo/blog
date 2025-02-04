@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from typing import Annotated
 from services.users import UsersService
 import schemas
@@ -33,8 +33,9 @@ async def get_user_posts(user_id: int, users_service: ann_users_service) -> List
 
 
 @router.post('/avatar_upload')
-async def avatar_upload(token: str, s3_service: annotated_s3_service, file: UploadFile = File(...)):
-    file2store = await file.read()
+async def avatar_upload(s3_service: annotated_s3_service, token: Annotated[str, Form()], image: UploadFile = File(...)):
+    file2store = await image.read()
+
     return await s3_service.UploadAvatar(schemas.users.AvatarUpload(
         token=schemas.token.Token(token=token),
         file=file2store
@@ -47,4 +48,4 @@ async def get_avatar_by_id(id: int, users_service: ann_users_service):
 
 @router.post('/get_avatar_by_token')
 async def get_avatar_by_token(token: schemas.token.Token, users_service: ann_users_service):
-    return await users_service.GetAvatar(token=token)    
+    return {"path": await users_service.GetAvatar(token=token)}
