@@ -12,17 +12,18 @@ class UsersService:
     def __init__(self, users_repo: UsersRepository):
         self.users_repo: UsersRepository = users_repo()
 
+
     async def ChangePassword(self, ch_data: schemas.users.ChangePasswordSchema) -> bool:
         security.token.check_token_to_expire(schemas.token.Token(token=ch_data.token))
+        decoded = security.token.decode_jwt_token(schemas.token.Token(token=ch_data.token))
         if ch_data.old_password == ch_data.new_password:
             raise exceptions.users.SamePasswords
         resp = await self.users_repo.update(
             {
-                "email": ch_data.email,
                 "password": security.utils.create_hash(ch_data.new_password)
             },
-            email=ch_data.email,
-            password=security.utils.create_hash(ch_data.old_password)
+            password=security.utils.create_hash(ch_data.old_password),
+            email=decoded.email
         )
         if not resp:
             raise exceptions.users.UncorrectEmailOrPassword
@@ -30,6 +31,7 @@ class UsersService:
         if resp:
             return {"detail": "Succesfully!"}
         
+
     async def GetSelfByToken(self, token: schemas.token.Token) -> schemas.users.BaseInfo:
         security.token.check_token_to_expire(token=token)
         decoded = security.token.decode_jwt_token(token=token)
@@ -42,6 +44,7 @@ class UsersService:
             role=resp.role,
         )
     
+
     async def GetUserPosts(self, user_id: int) -> List[schemas.tables.PostsSchema]:
         posts = await self.users_repo.GetUserPosts(user_id=user_id)
         posts.reverse()

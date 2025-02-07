@@ -15,7 +15,6 @@ class LoginSchema(BaseSchema):
 
 class ChangePasswordSchema(BaseSchema):
     token: str
-    email: EmailStr
     old_password: str
     new_password: str
 
