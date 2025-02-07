@@ -65,4 +65,11 @@ class UsersService:
             raise exceptions.users.AvatarNotFound
 
         return user.avatar_path
+    
+
+    async def ChangeName(self, data: schemas.users.ChangeNameSchema):
+        token = data.get_token()
+        security.token.check_token_to_expire(token=token)
+        decoded = security.token.decode_jwt_token(token=token)
+        return await self.users_repo.update({"nickname": data.new_name}, email=decoded.email)
         

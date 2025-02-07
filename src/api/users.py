@@ -7,6 +7,7 @@ from schemas.tables import PostsSchema
 from api.depends import users_service, s3_service
 from services.s3 import S3Service
 
+
 router = APIRouter(
     prefix="/users",
     tags=["Users"]
@@ -49,3 +50,8 @@ async def get_avatar_by_id(id: int, users_service: ann_users_service):
 @router.post('/get_avatar_by_token')
 async def get_avatar_by_token(token: schemas.token.Token, users_service: ann_users_service):
     return {"path": await users_service.GetAvatar(token=token)}
+
+@router.post('/change_name')
+async def change_name(data: schemas.users.ChangeNameSchema, users_service: ann_users_service):
+    return await users_service.ChangeName(data=data)
+    

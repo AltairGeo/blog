@@ -27,3 +27,11 @@ class BaseInfo(BaseSchema):
 class AvatarUpload(BaseSchema):
     token: Token
     file: bytes
+
+
+class ChangeNameSchema(BaseSchema):
+    new_name: str
+    token: str
+
+    def get_token(self):
+        return Token(token=self.token)
