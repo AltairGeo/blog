@@ -10,12 +10,13 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "src")))
 
 # Импортируем настройки
-from old_src.config import settings
+from settings import AppSettings
 
+from models.models import UsersModel, PostsModel
 # Импортируем базовый класс моделей
-from old_src.db.models import Base
+from db.core import ModelBase
 
-target_metadata = Base.metadata
+target_metadata = ModelBase.metadata
 
 def run_migrations_online():
     """
@@ -26,7 +27,7 @@ def run_migrations_online():
     if connectable is None:
         # Используем URL из настроек напрямую
         connectable = create_async_engine(
-            settings.db_url,
+            AppSettings.db_url,
             poolclass=pool.NullPool,
         )
 
