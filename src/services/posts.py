@@ -4,6 +4,7 @@ from repositories.users import UsersRepository
 from schemas.posts import CreatePost
 from schemas.token import Token
 from datetime import datetime, timezone
+from typing import List
 import security
 import exceptions
 from models.models import PostsModel
@@ -95,3 +96,8 @@ class PostsService:
                 author_id=decoded.id,
             )
             return change
+
+
+    async def GetPostsCount(self) -> int:
+        posts = await self.posts_repo.find_all()
+        return len(posts)

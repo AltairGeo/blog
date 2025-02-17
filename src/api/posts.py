@@ -38,3 +38,8 @@ async def getting_last_posts_page(page: int, posts_service: ann_posts_service) -
 @router.put("/change_post")
 async def change_post(new_post: schemas.posts.ChangePostSchema, posts_service: ann_posts_service):
     return await posts_service.ChangePost(new_post)
+
+
+@router.get('/count')
+async def get_count_posts(posts_service: ann_posts_service) -> int:
+    return await posts_service.GetPostsCount()

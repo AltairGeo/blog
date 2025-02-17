@@ -60,3 +60,4 @@ class PostsRepository(SQLAlchemyRepository):
                 await session.refresh(i, attribute_names=["author"])
             
             return result
+        
