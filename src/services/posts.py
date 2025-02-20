@@ -10,6 +10,7 @@ import exceptions
 from models.models import PostsModel
 from typing import List
 from schemas.posts import DeletePostSchema, PostToClient, ChangePostSchema
+from math import ceil
 
 
 class PostsService:
@@ -100,4 +101,5 @@ class PostsService:
 
     async def GetPostsCount(self) -> int:
         posts = await self.posts_repo.find_all()
-        return len(posts)
+        posts_count = len(posts)
+        return ceil(posts_count / 10)
