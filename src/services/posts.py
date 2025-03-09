@@ -9,7 +9,7 @@ import security
 import exceptions
 from models.models import PostsModel
 from typing import List
-from schemas.posts import DeletePostSchema, PostToClient, ChangePostSchema
+from schemas.posts import DeletePostSchema, FullPost, ChangePostSchema
 from math import ceil
 
 
@@ -51,7 +51,7 @@ class PostsService:
         
         return await self.posts_repo.delete(id=data.id)
     
-    async def GetPostByID(self, post_id: int) -> PostToClient:
+    async def GetPostByID(self, post_id: int) -> FullPost:
         resp: PostsModel = await self.posts_repo.get_full_post(post_id=post_id)
         
         if not resp:

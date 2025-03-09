@@ -31,7 +31,7 @@ async def get_post(post_id: int, posts_service: ann_posts_service):
 
 
 @router.get('/get_last_posts_page')
-async def getting_last_posts_page(page: int, posts_service: ann_posts_service) -> List[schemas.posts.PostToClient]:
+async def getting_last_posts_page(page: int, posts_service: ann_posts_service) -> List[schemas.posts.FullPost]:
     return await posts_service.GetLastPostsPage(page=page)
 
 

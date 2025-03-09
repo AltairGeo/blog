@@ -1,5 +1,5 @@
 from repositories.base import AbstractElasticRepo
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from utils.posts import calculation_offset
 
 
