@@ -61,3 +61,18 @@ class PostsRepository(SQLAlchemyRepository):
             
             return result
         
+    async def get_all_posts(self):
+        async with async_session_maker() as session:
+            stm = select(PostsModel)
+            res = await session.execute(stm)
+            result = res.scalars().all()
+
+            if result == []:
+                raise exceptions.posts.PostsNotFound
+
+            for i in result:
+                await session.refresh(i, attribute_names=["author"])
+
+            ready = []
+
+            return [ready.append(schemas.posts.FullPost(**i)) for i in result]

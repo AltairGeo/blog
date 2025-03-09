@@ -2,13 +2,15 @@ from repositories.base import AbstractElasticRepo
 from schemas.posts import FullPost
 from elasticsearch import AsyncElasticsearch
 from repositories.elastic import ElasticRepo
+from repositories.posts import PostsRepository
 from typing import Dict, Any, List
 from fastapi import HTTPException
 
 
 class ElasticService:
-    def __init__(self, elastic_repo: AbstractElasticRepo):
-        self.elastic_repo = elastic_repo
+    def __init__(self, elastic_repo: AbstractElasticRepo, posts_repo: PostsRepository):
+        self.elastic_repo: AbstractElasticRepo = elastic_repo
+        self.posts_repo: PostsRepository = posts_repo
 
     async def AddPostToIndex(self, post: FullPost):
         return await self.elastic_repo.add_to_index(doc_id=post.id, document=post.to_elastic())
