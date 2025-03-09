@@ -1,16 +1,16 @@
+from datetime import datetime, timezone
+from math import ceil
+from typing import List
+
+import exceptions
 import exceptions.users
+import security
+from models.models import PostsModel
 from repositories.posts import PostsRepository
 from repositories.users import UsersRepository
 from schemas.posts import CreatePost
-from schemas.token import Token
-from datetime import datetime, timezone
-from typing import List
-import security
-import exceptions
-from models.models import PostsModel
-from typing import List
 from schemas.posts import DeletePostSchema, FullPost, ChangePostSchema
-from math import ceil
+from schemas.token import Token
 
 
 class PostsService:
@@ -20,8 +20,8 @@ class PostsService:
     async def CreatePost(self, data: CreatePost):
         security.token.check_token_to_expire(Token(token=data.token))
         decoded = security.token.decode_jwt_token(Token(token=data.token))
-        UsrRepo = UsersRepository()
-        user = await UsrRepo.find_one(id=decoded.id, email=decoded.email)
+        UserRepo = UsersRepository()
+        user = await UserRepo.find_one(id=decoded.id, email=decoded.email)
         if not user:
             raise exceptions.users.UserNotFound 
         return await self.posts_repo.create(

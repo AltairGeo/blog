@@ -74,5 +74,14 @@ class PostsRepository(SQLAlchemyRepository):
                 await session.refresh(i, attribute_names=["author"])
 
             ready = []
-
-            return [ready.append(schemas.posts.FullPost(**i)) for i in result]
+            [ready.append(
+            schemas.posts.FullPost(
+                id=i.id,
+                title=i.title,
+                text=i.text,
+                author_id=i.author_id,
+                author_name=i.author.nickname,
+                created_at=i.created_at
+            )) for i in result]
+            return ready
+            # return [ready.append(schemas.posts.FullPost(**(i.__dict__))) for i in result]

@@ -51,7 +51,12 @@ class ElasticRepo(AbstractElasticRepo):
             documents = [i.model_dump() for i in documents]
 
             for doc in documents:
-                bulk_actions.append({"index": {"_index": self.index_name}})
+                bulk_actions.append({
+                    "index": {
+                        "_index": self.index_name,
+                        "_id": str(doc["id"]),
+                    }
+                })
                 bulk_actions.append(doc)
 
             resp = await self.es.bulk(index=self.index_name, operations=bulk_actions)
