@@ -1,6 +1,7 @@
 from repositories.base import AbstractElasticRepo
 from typing import Dict, Any, List, Optional
 from utils.posts import calculation_offset
+from schemas.posts import FullPost
 
 
 class ElasticRepo(AbstractElasticRepo):
@@ -11,7 +12,6 @@ class ElasticRepo(AbstractElasticRepo):
         except Exception as e:
             print(e)
             return False
-
     
     async def remove_from_index(self, doc_id: int) -> bool:
         try:
@@ -44,3 +44,18 @@ class ElasticRepo(AbstractElasticRepo):
             print(e)
             return
 
+
+    async def bulk_add_to_index(self, documents: List[FullPost]):
+        try:
+            bulk_actions = []
+            documents = [i.model_dump() for i in documents]
+
+            for doc in documents:
+                bulk_actions.append({"index": {"_index": self.index_name}})
+                bulk_actions.append(doc)
+
+            resp = await self.es.bulk(index=self.index_name, operations=bulk_actions)
+            return resp
+        except Exception as e:
+            print(e)
+            return {'err': str(e)}

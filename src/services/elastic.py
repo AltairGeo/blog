@@ -2,7 +2,8 @@ from repositories.base import AbstractElasticRepo
 from schemas.posts import FullPost
 from elasticsearch import AsyncElasticsearch
 from repositories.elastic import ElasticRepo
-from typing import Dict, Any
+from typing import Dict, Any, List
+from fastapi import HTTPException
 
 
 class ElasticService:
@@ -12,27 +13,31 @@ class ElasticService:
     async def AddPostToIndex(self, post: FullPost):
         return await self.elastic_repo.add_to_index(doc_id=post.id, document=post.to_elastic())
 
-    async def SearchPost(self, query: str, sort: Dict[str, Any], page: int):
+    async def SearchPost(self, query: str, sort: Dict[str, Any], page: int) -> Dict[str, Any]:
         el_query = {
             "multi_match": {
                 "query": query,
                 "fields": ["title", "text", "author"],
             }
         }
-        return await self.elastic_repo.search_in_index(query=el_query, sort=sort, page=page)
+        result = await self.elastic_repo.search_in_index(query=el_query, sort=sort, page=page)
+        if result['hits']['hits'] == []:
+            raise HTTPException(404, detail="Not found!")
+
+        pretty = {
+                "total": result['hits']['total']['value'],
+                "posts": result['hits']['hits']
+        }
+        return pretty
 
 
+    async def RemovePost(self, post_id: int) -> bool:
+        return await self.elastic_repo.remove_from_index(post_id)
 
 
+    async def UpdatePost(self, post_id: int, update_fields: Dict[str, Any]) -> bool:
+        return await self.elastic_repo.update_in_index(post_id, update_fields=update_fields)
 
-Service = ElasticService(
-    elastic_repo=ElasticRepo(
-        es_client=AsyncElasticsearch(
-            "https://127.0.0.1:9200/",
-            basic_auth=("elastic", "Nn2QHL8lLtO0sl7xBtZ0"),
-            verify_certs=False
-        ),
-        index_name="posts"
-    )
-)
 
+    async def ReIndex(self):
+        return await self.elastic_repo.bulk_add_to_index(posts)

@@ -27,6 +27,7 @@ class AbstractRepo(ABC):
         raise NotImplementedError
     
 
+
 class AbstractElasticRepo(ABC):
     def __init__(self, es_client: AsyncElasticsearch, index_name: str):
         self.es = es_client
@@ -45,7 +46,6 @@ class AbstractElasticRepo(ABC):
         self.add_to_index()
         raise NotImplementedError
 
-
     @abstractmethod
     async def search_in_index(
             self,
@@ -54,4 +54,8 @@ class AbstractElasticRepo(ABC):
             page: int = 1,
         ) -> List[Dict[str, Any]]:
 
+        raise NotImplementedError
+
+    @abstractmethod
+    async def bulk_add_to_index(self, documents: List[Dict[str, Any]]):
         raise NotImplementedError
