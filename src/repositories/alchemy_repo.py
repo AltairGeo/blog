@@ -1,4 +1,4 @@
-from repositories.base_repo import AbstractRepo
+from repositories.base import AbstractRepo
 from db.core import async_session_maker
 from sqlalchemy import insert, update, delete, select
 
