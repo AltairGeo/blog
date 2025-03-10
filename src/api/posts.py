@@ -56,9 +56,19 @@ async def getting_last_posts_page(page: int, posts_service: ann_posts_service) -
 
 
 @router.put("/change_post")
-async def change_post(new_post: schemas.posts.ChangePostSchema, posts_service: ann_posts_service):
-    return await posts_service.ChangePost(new_post)
-
+async def change_post(
+        new_post: schemas.posts.ChangePostSchema,
+        posts_service: ann_posts_service,
+        search_service: ann_elastic_service,
+        background_tasks: BackgroundTasks
+):
+    res = await posts_service.ChangePost(new_post)
+    if res:
+        background_tasks.add_task(
+            search_service.update_post,
+            new_post.post_id,
+            {"title": new_post.title, "text": new_post.text})
+    return res
 
 @router.get('/count')
 async def get_count_posts(posts_service: ann_posts_service) -> int:

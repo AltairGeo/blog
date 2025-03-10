@@ -14,13 +14,16 @@ class SQLAlchemyRepository(AbstractRepo):
             await session.commit()
             return res.scalar_one()
 
-    async def update(self, data: dict, **filters):
+    async def update(self, data: dict, **filters) -> bool:
         async with async_session_maker() as session:
             stmt = update(self.model).values(**data).filter_by(**filters).returning(self.model)
             res = await session.execute(stmt)
             await session.commit()
             updated = res.scalar_one_or_none()
-            return updated is not None
+            if updated:
+                return True
+            else:
+                return False
 
     async def delete(self, **filters) -> bool:
         async with async_session_maker() as session:
