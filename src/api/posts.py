@@ -34,9 +34,16 @@ async def get_last_posts(posts_service: ann_posts_service):
 
 
 @router.delete('/delete')
-async def delete_post(data: schemas.posts.DeletePostSchema, posts_service: ann_posts_service):
-    return await posts_service.DeletePost(data=data)
-
+async def delete_post(
+        data: schemas.posts.DeletePostSchema,
+        posts_service: ann_posts_service,
+        search_service: ann_elastic_service,
+        background_tasks: BackgroundTasks
+):
+    if await posts_service.DeletePost(data=data):
+        background_tasks.add_task(search_service.remove_post, data.id)
+    else:
+        return False
 
 @router.get('/get_post')
 async def get_post(post_id: int, posts_service: ann_posts_service):

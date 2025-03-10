@@ -37,7 +37,7 @@ class PostsService:
         resp = await self.posts_repo.get_ten_lasts()
         return resp
 
-    async def DeletePost(self, data: DeletePostSchema):
+    async def DeletePost(self, data: DeletePostSchema) -> bool:
         security.token.check_token_to_expire(Token(token=data.token))
         decoded = security.token.decode_jwt_token(Token(token=data.token))
 
