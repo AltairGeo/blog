@@ -61,7 +61,7 @@ class PostsRepository(SQLAlchemyRepository):
 
             return result
 
-    async def get_all_posts(self):
+    async def get_all_posts(self) -> List[schemas.posts.FullPost]:
         async with async_session_maker() as session:
             stm = select(PostsModel)
             res = await session.execute(stm)
@@ -84,4 +84,3 @@ class PostsRepository(SQLAlchemyRepository):
                     created_at=i.created_at
                 )) for i in result]
             return ready
-            # return [ready.append(schemas.posts.FullPost(**(i.__dict__))) for i in result]

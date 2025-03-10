@@ -20,6 +20,7 @@ class FullPost(BaseSchema):
 
     def to_elastic(self) -> dict:
         return {
+            "id": self.id,
             "title": self.title,
             "text": self.text,
             "created_at": self.created_at.isoformat(),

@@ -47,7 +47,7 @@ class ElasticRepo(AbstractElasticRepo):
     async def bulk_add_to_index(self, documents: List[FullPost]):
         try:
             bulk_actions = []
-            documents = [i.model_dump() for i in documents]
+            documents = [i.to_elastic() for i in documents]
 
             for doc in documents:
                 bulk_actions.append({
