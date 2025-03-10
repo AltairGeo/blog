@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, BackgroundTasks
 from typing import Annotated, List
-from services.posts import PostsService
-from services.elastic import ElasticService
-from api.depends import posts_service, elastic_service
-import schemas
 
+from fastapi import APIRouter, Depends, BackgroundTasks
+
+import schemas
+from api.depends import posts_service, elastic_service
+from services.elastic import ElasticService
+from services.posts import PostsService
 
 ann_posts_service = Annotated[PostsService, Depends(posts_service)]
 ann_elastic_service = Annotated[ElasticService, Depends(elastic_service)]
@@ -13,6 +14,7 @@ router = APIRouter(
     prefix="/posts",
     tags=["Posts"]
 )
+
 
 @router.post('/create')
 async def create_post(
@@ -25,9 +27,11 @@ async def create_post(
     background_tasks.add_task(search_service.AddPostToIndexById, result.id)
     return result
 
+
 @router.get('/get_last_posts')
 async def get_last_posts(posts_service: ann_posts_service):
     return await posts_service.GetLastPosts()
+
 
 @router.delete('/delete')
 async def delete_post(data: schemas.posts.DeletePostSchema, posts_service: ann_posts_service):

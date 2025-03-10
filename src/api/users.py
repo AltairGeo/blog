@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form
 from typing import Annotated
-from services.users import UsersService
-import schemas
 from typing import List
-from schemas.tables import PostsSchema
-from api.depends import users_service, s3_service
-from services.s3 import S3Service
 
+from fastapi import APIRouter, Depends, UploadFile, File, Form
+
+import schemas
+from api.depends import users_service, s3_service
+from schemas.tables import PostsSchema
+from services.s3 import S3Service
+from services.users import UsersService
 
 router = APIRouter(
     prefix="/users",
@@ -18,7 +19,8 @@ annotated_s3_service = Annotated[S3Service, Depends(s3_service)]
 
 
 @router.post('/change_password')
-async def change_password(data: schemas.users.ChangePasswordSchema, users_service: Annotated[UsersService, Depends(users_service)]):
+async def change_password(data: schemas.users.ChangePasswordSchema,
+                          users_service: Annotated[UsersService, Depends(users_service)]):
     resp = await users_service.ChangePassword(ch_data=data)
     return resp
 
@@ -42,6 +44,7 @@ async def avatar_upload(s3_service: annotated_s3_service, token: Annotated[str, 
         file=file2store
     ))
 
+
 @router.get('/get_avatar_by_id')
 async def get_avatar_by_id(id: int, users_service: ann_users_service):
     return await users_service.GetAvatar(id=id)
@@ -51,7 +54,7 @@ async def get_avatar_by_id(id: int, users_service: ann_users_service):
 async def get_avatar_by_token(token: schemas.token.Token, users_service: ann_users_service):
     return {"path": await users_service.GetAvatar(token=token)}
 
+
 @router.post('/change_name')
 async def change_name(data: schemas.users.ChangeNameSchema, users_service: ann_users_service):
     return await users_service.ChangeName(data=data)
-    

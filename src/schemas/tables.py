@@ -1,7 +1,10 @@
-from schemas.base import BaseSchema
-from pydantic import EmailStr
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import EmailStr
+
+from schemas.base import BaseSchema
+
 
 class UsersSchema(BaseSchema):
     id: int
@@ -10,6 +13,7 @@ class UsersSchema(BaseSchema):
     password: str
     avatar_path: Optional[str]
     role: Optional[str]
+
 
 class PostsSchema(BaseSchema):
     id: int

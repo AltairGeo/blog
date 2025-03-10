@@ -1,9 +1,11 @@
-from schemas.base import BaseSchema
 from pydantic import EmailStr
-from datetime import datetime
+
+from schemas.base import BaseSchema
+
 
 class Token(BaseSchema):
     token: str
+
 
 class TokenData(BaseSchema):
     id: int

@@ -1,13 +1,14 @@
-from sqlalchemy import String, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
-from db.core import ModelBase
-from schemas.tables import PostsSchema, UsersSchema
 from typing import List
 
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from db.core import ModelBase
+from schemas.tables import PostsSchema, UsersSchema
 
 
-class PostsModel(ModelBase): # Table for posts
+class PostsModel(ModelBase):  # Table for posts
     __tablename__ = "posts"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -25,9 +26,9 @@ class PostsModel(ModelBase): # Table for posts
             author_id=self.author_id,
             created_at=self.created_at,
         )
-        
 
-class UsersModel(ModelBase): # Users table
+
+class UsersModel(ModelBase):  # Users table
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)

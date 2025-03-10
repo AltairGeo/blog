@@ -1,6 +1,8 @@
-from repositories.base import AbstractRepo
-from db.core import async_session_maker
 from sqlalchemy import insert, update, delete, select
+
+from db.core import async_session_maker
+from repositories.base import AbstractRepo
+
 
 class SQLAlchemyRepository(AbstractRepo):
     model = None
@@ -10,8 +12,8 @@ class SQLAlchemyRepository(AbstractRepo):
             stmt = insert(self.model).values(**data).returning(self.model)
             res = await session.execute(stmt)
             await session.commit()
-            return res.scalar_one()  
-    
+            return res.scalar_one()
+
     async def update(self, data: dict, **filters):
         async with async_session_maker() as session:
             stmt = update(self.model).values(**data).filter_by(**filters).returning(self.model)
@@ -19,7 +21,7 @@ class SQLAlchemyRepository(AbstractRepo):
             await session.commit()
             updated = res.scalar_one_or_none()
             return updated is not None
-    
+
     async def delete(self, **filters) -> bool:
         async with async_session_maker() as session:
             stmt = delete(self.model).filter_by(**filters)

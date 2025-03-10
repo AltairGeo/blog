@@ -1,28 +1,33 @@
-from repositories.users import UsersRepository
-from repositories.posts import PostsRepository
+from elasticsearch import AsyncElasticsearch
+
 from repositories.elastic import ElasticRepo
-from services.elastic import ElasticService
-from services.users import UsersService
+from repositories.posts import PostsRepository
+from repositories.s3 import S3Repo
+from repositories.users import UsersRepository
 from services.auth import AuthService
+from services.elastic import ElasticService
 from services.posts import PostsService
 from services.s3 import S3Service
-from repositories.s3 import S3Repo
+from services.users import UsersService
 from settings import AppSettings
-from elasticsearch import AsyncElasticsearch
+
 
 def users_service():
     return UsersService(UsersRepository)
 
+
 def auth_service():
     return AuthService(UsersRepository)
+
 
 def posts_service():
     return PostsService(PostsRepository)
 
+
 def elastic_service():
     return ElasticService(
         elastic_repo=ElasticRepo(
-                es_client=AsyncElasticsearch(
+            es_client=AsyncElasticsearch(
                 AppSettings.elastic_host,
                 basic_auth=(AppSettings.elastic_user, AppSettings.elastic_password),
                 verify_certs=False
@@ -32,6 +37,7 @@ def elastic_service():
         posts_repo=PostsRepository
     )
 
+
 def s3_service():
     return S3Service(S3Repo(
         access_key=AppSettings.s3accesKey,
@@ -39,5 +45,5 @@ def s3_service():
         bucket_name=AppSettings.bucket_name,
         endpoint_url=AppSettings.s3endpointurl,
     ),
-    UsersRepository()
+        UsersRepository()
     )

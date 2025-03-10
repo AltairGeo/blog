@@ -1,7 +1,7 @@
+import schemas
+import security
 from repositories.s3 import S3Repo
 from repositories.users import UsersRepository
-import security
-import schemas
 
 
 class S3Service:
@@ -10,10 +10,8 @@ class S3Service:
         self.users_repo: UsersRepository = UsersRepository()
 
     async def UploadAvatar(self, data: schemas.users.AvatarUpload) -> str:
-        security.token.check_token_to_expire(token=data.token) # check token to expire
-        decoded = security.token.decode_jwt_token(token=data.token) # decode token
-        resp: str = await self.s3_repo.upload_avatar(key=str(decoded.id), file=data.file) # Upload avatar to s3
+        security.token.check_token_to_expire(token=data.token)  # check token to expire
+        decoded = security.token.decode_jwt_token(token=data.token)  # decode token
+        resp: str = await self.s3_repo.upload_avatar(key=str(decoded.id), file=data.file)  # Upload avatar to s3
         update = await self.users_repo.update({"avatar_path": resp}, id=decoded.id, email=decoded.email)
         return resp
-        
-    

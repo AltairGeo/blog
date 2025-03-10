@@ -1,14 +1,16 @@
-from aiobotocore.session import get_session
 from contextlib import asynccontextmanager
+
+from aiobotocore.session import get_session
+
 
 class S3Repo():
     def __init__(
-                self,
-                access_key: str,
-                secret_key: str,
-                endpoint_url: str,
-                bucket_name: str,
-):        
+            self,
+            access_key: str,
+            secret_key: str,
+            endpoint_url: str,
+            bucket_name: str,
+    ):
         self.config = {
             "aws_access_key_id": access_key,
             "aws_secret_access_key": secret_key,
@@ -17,7 +19,6 @@ class S3Repo():
 
         self.bucket_name = bucket_name
         self.session = get_session()
-
 
     @asynccontextmanager
     async def get_client(self):
@@ -31,8 +32,8 @@ class S3Repo():
                 Key=key,
                 Body=file,
                 ContentType="image/jpeg",
-                )
+            )
             return await self.compose_path(key=key)
-        
+
     async def compose_path(self, key: int) -> str:
         return f"{self.config["endpoint_url"]}{self.bucket_name}/{key}"

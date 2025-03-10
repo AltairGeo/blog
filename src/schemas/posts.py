@@ -1,11 +1,14 @@
-from schemas.base import BaseSchema
 from datetime import datetime
+
+from schemas.base import BaseSchema
+
 
 class CreatePost(BaseSchema):
     title: str
     text: str
     # created_at: datetime = datetime.now(timezone.utc)
     token: str
+
 
 class FullPost(BaseSchema):
     id: int
@@ -23,9 +26,11 @@ class FullPost(BaseSchema):
             "author": self.author_name,
         }
 
+
 class DeletePostSchema(BaseSchema):
     id: int
     token: str
+
 
 class ChangePostSchema(BaseSchema):
     token: str

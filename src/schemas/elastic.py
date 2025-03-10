@@ -1,6 +1,7 @@
+from typing import List
+
 from schemas.base import BaseSchema
 from schemas.posts import FullPost
-from typing import List
 
 
 class SearchResult(BaseSchema):

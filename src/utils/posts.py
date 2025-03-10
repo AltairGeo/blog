@@ -1,5 +1,6 @@
 import exceptions
 
+
 def calculation_offset(page: int):
     """
     Calculation offset to db.
