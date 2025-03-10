@@ -54,3 +54,6 @@ class ElasticService:
     async def reindexation_of_posts(self):
         posts = await self.posts_repo.get_all_posts()
         return await self.elastic_repo.bulk_add_to_index(posts)
+
+    async def ping(self) -> bool:
+        return await self.elastic_repo.ping()

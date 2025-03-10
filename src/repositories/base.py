@@ -56,3 +56,7 @@ class AbstractElasticRepo(ABC):
     @abstractmethod
     async def bulk_add_to_index(self, documents: List[Dict[str, Any]]):
         raise NotImplementedError
+
+    @abstractmethod
+    async def ping(self) -> bool:
+        raise NotImplementedError

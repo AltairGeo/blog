@@ -63,3 +63,10 @@ class ElasticRepo(AbstractElasticRepo):
         except Exception as e:
             print(e)
             return {'err': str(e)}
+
+    async def ping(self) -> bool:
+        try:
+            return await self.es.ping()
+        except Exception as e:
+            print(e)
+            return False
