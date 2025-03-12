@@ -8,7 +8,7 @@ dotenv.load_dotenv()
 
 class Settings:
     def __init__(self):
-        # Получение секретов из переменной среды
+        # Получение секретов из переменных окружения и .env
         self.jwt_secret: str = getenv("JWT_SECRET")
         self.db_url: str = getenv("DB_URL")  # databaseName+driver://user:password@ip:port/db
         # postgresql+asyncpg://user:password@ip:port/db

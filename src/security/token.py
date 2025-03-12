@@ -1,5 +1,5 @@
+import logging
 from datetime import datetime, timezone
-
 import jwt
 
 import exceptions
@@ -18,7 +18,7 @@ def generate_jwt_token(data: TokenData) -> Token:
             )
         )
     except Exception as e:
-        print(e)
+        logging.error(str(e))
         raise exceptions.token.DecodingWasFailed
 
 
@@ -31,7 +31,7 @@ def decode_jwt_token(token: Token) -> TokenData:
             expires_at=decode["expires_at"]
         )
     except Exception as e:
-        print(e)
+        logging.error(str(e))
         raise exceptions.token.DecodingWasFailed
 
 

@@ -1,5 +1,5 @@
+import logging
 from contextlib import asynccontextmanager
-
 from aiobotocore.session import get_session
 
 
@@ -22,18 +22,30 @@ class S3Repo():
 
     @asynccontextmanager
     async def get_client(self):
-        async with self.session.create_client("s3", **self.config) as client:
-            yield client
+        try:
+            async with self.session.create_client("s3", **self.config) as client:
+                yield client
+        except Exception as e:
+            logging.error(e)
+            raise e
 
-    async def upload_avatar(self, key: str, file: bytes):
-        async with self.get_client() as client:
-            await client.put_object(
-                Bucket=self.bucket_name,
-                Key=key,
-                Body=file,
-                ContentType="image/jpeg",
-            )
-            return await self.compose_path(key=key)
+    async def upload_avatar(self, key: str, file: bytes) -> str:
+        try:
+            async with self.get_client() as client:
+                await client.put_object(
+                    Bucket=self.bucket_name,
+                    Key=key,
+                    Body=file,
+                    ContentType="image/jpeg",
+                )
+                return await self.compose_path(key=key)
+        except Exception as e:
+            logging.error(str(e))
+            raise e
 
     async def compose_path(self, key: int) -> str:
-        return f"{self.config["endpoint_url"]}{self.bucket_name}/{key}"
+        try:
+            return f"{self.config["endpoint_url"]}{self.bucket_name}/{key}"
+        except Exception as e:
+            logging.error(e)
+            raise e

@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
 
@@ -10,7 +12,7 @@ except:
     try:
         engine = create_async_engine(AppSettings.db_url)
     except Exception as e:
-        print(e)
+        logging.error(str(e))
         raise e
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)  # Create session maker
 

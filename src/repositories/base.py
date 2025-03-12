@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional, List
+from logging import warning
 
 from elasticsearch import AsyncElasticsearch
 
@@ -7,22 +8,27 @@ from elasticsearch import AsyncElasticsearch
 class AbstractRepo(ABC):
     @abstractmethod
     async def create(self):
+        warning("DONT USE ABSTRACT REPOSITORY!")
         raise NotImplementedError
 
     @abstractmethod
     async def update(self):
+        warning("DONT USE ABSTRACT REPOSITORY!")
         raise NotImplementedError
 
     @abstractmethod
     async def delete(self):
+        warning("DONT USE ABSTRACT REPOSITORY!")
         raise NotImplementedError
 
     @abstractmethod
     async def find_one(self):
+        warning("DONT USE ABSTRACT REPOSITORY!")
         raise NotImplementedError
 
     @abstractmethod
     async def find_all(self):
+        warning("DONT USE ABSTRACT REPOSITORY!")
         raise NotImplementedError
 
 
@@ -33,15 +39,17 @@ class AbstractElasticRepo(ABC):
 
     @abstractmethod
     async def add_to_index(self, doc_id: int, document: Dict[str, Any]) -> bool:
+        warning("DONT USE ABSTRACT REPOSITORY!")
         raise NotImplementedError
 
     @abstractmethod
     async def remove_from_index(self, doc_id: int) -> bool:
+        warning("DONT USE ABSTRACT REPOSITORY!")
         raise NotImplementedError
 
     @abstractmethod
     async def update_in_index(self, doc_id: int, update_fields: Dict[str, Any]) -> bool:
-        self.add_to_index()
+        warning("DONT USE ABSTRACT REPOSITORY!")
         raise NotImplementedError
 
     @abstractmethod
@@ -51,6 +59,7 @@ class AbstractElasticRepo(ABC):
             sort: Optional[List[Dict[str, any]]],
             page: int = 1,
     ) -> List[Dict[str, Any]]:
+        warning("DONT USE ABSTRACT REPOSITORY!")
         raise NotImplementedError
 
     @abstractmethod

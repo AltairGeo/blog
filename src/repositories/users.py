@@ -1,5 +1,5 @@
 from typing import List
-
+import logging
 from sqlalchemy import select
 
 from db.core import async_session_maker
@@ -11,10 +11,14 @@ class UsersRepository(SQLAlchemyRepository):
     model = UsersModel
 
     async def GetUserPosts(self, user_id: int) -> List[PostsModel]:
-        async with async_session_maker() as session:
-            query = select(self.model).filter_by(id=user_id)
-            user = await session.execute(query)
-            user = user.scalar_one()
-            await session.refresh(user, ['posts'])
-            posts = user.posts
-            return posts
+        try:
+            async with async_session_maker() as session:
+                query = select(self.model).filter_by(id=user_id)
+                user = await session.execute(query)
+                user = user.scalar_one()
+                await session.refresh(user, ['posts'])
+                posts = user.posts
+                return posts
+        except Exception as e:
+            logging.error(str(e))
+            raise e

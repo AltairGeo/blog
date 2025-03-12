@@ -1,4 +1,5 @@
 from typing import Dict, Any, List, Optional
+import logging
 
 from repositories.base import AbstractElasticRepo
 from schemas.posts import FullPost
@@ -11,7 +12,7 @@ class ElasticRepo(AbstractElasticRepo):
             await self.es.index(index=self.index_name, id=str(doc_id), document=document)
             return True
         except Exception as e:
-            print(e)
+            logging.error(str(e))
             return False
 
     async def remove_from_index(self, doc_id: int) -> bool:
@@ -19,7 +20,7 @@ class ElasticRepo(AbstractElasticRepo):
             await self.es.delete(index=self.index_name, id=str(doc_id))
             return True
         except Exception as e:
-            print(e)
+            logging.error(str(e))
             return False
 
     async def update_in_index(self, doc_id: int, update_fields: Dict[str, Any]) -> bool:
@@ -27,7 +28,7 @@ class ElasticRepo(AbstractElasticRepo):
             await self.es.update(index=self.index_name, id=str(doc_id), doc=update_fields)
             return True
         except Exception as e:
-            print(e)
+            logging.error(str(e))
             return False
 
     async def search_in_index(
@@ -41,7 +42,7 @@ class ElasticRepo(AbstractElasticRepo):
             result = await self.es.search(index=self.index_name, query=query, sort=sort, from_=offset, size=10)
             return result
         except Exception as e:
-            print(e)
+            logging.error(str(e))
             return
 
     async def bulk_add_to_index(self, documents: List[FullPost]):
@@ -61,12 +62,12 @@ class ElasticRepo(AbstractElasticRepo):
             resp = await self.es.bulk(index=self.index_name, operations=bulk_actions)
             return resp
         except Exception as e:
-            print(e)
+            logging.error(str(e))
             return {'err': str(e)}
 
     async def ping(self) -> bool:
         try:
             return await self.es.ping()
         except Exception as e:
-            print(e)
+            logging.error(str(e))
             return False
