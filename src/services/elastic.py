@@ -36,6 +36,10 @@ class ElasticService:
             }
         }
         result = await self.elastic_repo.search_in_index(query=el_query, sort=sort, page=page)
+
+        if result is None:
+            raise HTTPException(500, detail="Something was wrong!")
+
         if result['hits']['hits'] == []:
             raise HTTPException(404, detail="Not found!")
 
