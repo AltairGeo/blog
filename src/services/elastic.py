@@ -35,7 +35,7 @@ class ElasticService:
         el_query = {
             "multi_match": {
                 "query": query,
-                "fields": ["title", "text", "author_name"],
+                "fields": ["title", "text", "author"],
             }
         }
         result = await self.elastic_repo.search_in_index(query=el_query, sort=sort, page=page)
