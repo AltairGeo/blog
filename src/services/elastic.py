@@ -6,6 +6,7 @@ from repositories.base import AbstractElasticRepo
 from repositories.posts import PostsRepository
 from schemas.elastic import SearchResult
 from schemas.posts import FullPost
+from exceptions.posts import PageLessZero
 
 
 class ElasticService:
@@ -29,6 +30,8 @@ class ElasticService:
         return await self.AddPostToIndex(full_post)
 
     async def SearchPost(self, query: str, sort: Dict[str, Any], page: int) -> SearchResult:
+        if page <= 0:
+            raise PageLessZero
         el_query = {
             "multi_match": {
                 "query": query,
