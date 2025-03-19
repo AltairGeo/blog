@@ -63,8 +63,5 @@ class UsersService:
 
         return user.avatar_path
 
-    async def ChangeName(self, data: schemas.users.ChangeNameSchema):
-        token = data.get_token()
-        security.token.check_token_to_expire(token=token)
-        decoded = security.token.decode_jwt_token(token=token)
-        return await self.users_repo.update({"nickname": data.new_name}, email=decoded.email)
+    async def ChangeName(self, email: str, new_name: str) -> bool:
+        return await self.users_repo.update({"nickname": new_name}, email=email)

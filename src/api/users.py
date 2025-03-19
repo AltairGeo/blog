@@ -13,7 +13,7 @@ router = APIRouter(
     prefix="/users",
     tags=["Users"]
 )
-
+ann_user_need = Annotated[UsersSchema, Depends(get_current_user)]
 ann_users_service = Annotated[UsersService, Depends(users_service)]
 annotated_s3_service = Annotated[S3Service, Depends(s3_service)]
 
@@ -56,10 +56,5 @@ async def get_avatar_by_token(token: schemas.token.Token, users_service: ann_use
 
 
 @router.post('/change_name')
-async def change_name(data: schemas.users.ChangeNameSchema, users_service: ann_users_service):
-    return await users_service.ChangeName(data=data)
-
-
-@router.get('/test_zxc')
-async def test_pupa(usr: Annotated[UsersSchema, Depends(get_current_user)]):
-    return usr
+async def change_name(new_name, usr: ann_user_need, users_service: ann_users_service):
+    return await users_service.ChangeName(email=usr.email, new_name=new_name)
