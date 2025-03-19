@@ -16,7 +16,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         else:
             expire = datetime.now(timezone.utc) + timedelta(minutes=AppSettings.token_life_time)
         to_encode.update({"exp": expire})
-        print(to_encode)
         encoded_jwt = jwt.encode(to_encode, AppSettings.jwt_secret, AppSettings.jwt_algo[0])
         return encoded_jwt
     except Exception as e:
@@ -24,9 +23,13 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         raise exceptions.token.CreationTokenWasFailed
 
 
-def decode_jwt_token(token: Token) -> TokenData:
+def decode_jwt_token(token: str) -> TokenData:
     try:
-        return jwt.decode(token.token, AppSettings.jwt_secret, AppSettings.jwt_algo)
+        decoded: dict = jwt.decode(token, AppSettings.jwt_secret, AppSettings.jwt_algo)
+        if decoded.get("id") is None or decoded.get("email") is None:
+            raise exceptions.token.DecodingWasFailed
+        return TokenData(id=decoded["id"], email=decoded["email"])
+
     except Exception as e:
         logging.error(str(e))
         raise exceptions.token.DecodingWasFailed

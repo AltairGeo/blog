@@ -4,8 +4,8 @@ from typing import List
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 
 import schemas
-from api.depends import users_service, s3_service
-from schemas.tables import PostsSchema
+from api.depends import users_service, s3_service, get_current_user
+from schemas.tables import PostsSchema, UsersSchema
 from services.s3 import S3Service
 from services.users import UsersService
 
@@ -58,3 +58,8 @@ async def get_avatar_by_token(token: schemas.token.Token, users_service: ann_use
 @router.post('/change_name')
 async def change_name(data: schemas.users.ChangeNameSchema, users_service: ann_users_service):
     return await users_service.ChangeName(data=data)
+
+
+@router.get('/test_zxc')
+async def test_pupa(usr: Annotated[UsersSchema, Depends(get_current_user)]):
+    return usr

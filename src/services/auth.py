@@ -36,10 +36,19 @@ class AuthService:
 
         if user.password == hash_pass:
             token_str = security.token.create_access_token(data={"id": user.id, "email": user.email})
-            print(token_str)
             return schemas.token.Token(
                 access_token=token_str,
                 token_type="bearer",
             )
         else:
             raise exceptions.users.UncorrectEmailOrPassword
+
+    async def GetUserWithToken(self, token: str) -> schemas.tables.UsersSchema:
+        """
+        Getting user by token.
+        """
+        tokenData = security.token.decode_jwt_token(token)
+        user: UsersModel = await self.users_repo.find_one(email=tokenData.email, id=tokenData.id)
+        if user is None:
+            raise exceptions.users.UserNotFound
+        return user.to_schema()
