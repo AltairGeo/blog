@@ -18,7 +18,7 @@ class AuthService:
         if user_found:
             raise exceptions.users.UserAlreadyCreate
 
-        user.password = security.utils.create_hash(user.password)  # Hashing password
+        user.password = security.utils.create_hash(user.password.strip())  # Hashing password
         user_dict = user.model_dump()
         resp: UsersModel = await self.users_repo.create(user_dict)
         user_schema = resp.to_schema()
@@ -28,14 +28,14 @@ class AuthService:
         """
         Login.
         """
-        user: UsersModel = await self.users_repo.find_one(email=data.email)
+        user: UsersModel = await self.users_repo.find_one(email=data.email.strip())
         if not user:
             raise exceptions.users.UserNotFound
-        hash_pass = security.utils.create_hash(data.password)
+        hash_pass = security.utils.create_hash(data.password.strip())
         user = user.to_schema()
 
         if user.password == hash_pass:
-            token_str = security.token.create_access_token(data={"id": user.id, "email": user.email})
+            token_str = security.token.create_access_token(data={"id": user.id, "email": user.email.strip()})
             return schemas.token.Token(
                 access_token=token_str,
                 token_type="bearer",
