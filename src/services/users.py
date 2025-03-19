@@ -26,7 +26,7 @@ class UsersService:
         if not resp:
             raise exceptions.users.UncorrectEmailOrPassword
         if resp:
-            return {"detail": "Succesfully!"}
+            return resp
 
     async def GetSelfByToken(self, token: schemas.token.Token) -> schemas.users.BaseInfo:
         security.token.check_token_to_expire(token=token)

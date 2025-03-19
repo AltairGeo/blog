@@ -1,5 +1,6 @@
 from typing import Annotated
 from typing import List
+from pydantic import HttpUrl
 
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 
@@ -23,7 +24,7 @@ async def change_password(
         data: schemas.users.ChangePasswordSchema,
         users_service: Annotated[UsersService, Depends(users_service)],
         usr: ann_user_need
-):
+) -> bool:
     return await users_service.ChangePassword(ch_data=data, usr=usr)
 
 
@@ -38,18 +39,18 @@ async def get_user_posts(user_id: int, users_service: ann_users_service) -> List
 
 
 @router.post('/avatar_upload')
-async def avatar_upload(s3_service: annotated_s3_service, usr: ann_user_need, image: UploadFile = File(...)):
+async def avatar_upload(s3_service: annotated_s3_service, usr: ann_user_need, image: UploadFile = File(...)) -> HttpUrl:
     file2store = await image.read()
     return await s3_service.UploadAvatar(file=file2store, usr=usr)
 
 
 @router.get('/get_avatar_by_id')
-async def get_avatar_by_id(user_id: int, users_service: ann_users_service):
+async def get_avatar_by_id(user_id: int, users_service: ann_users_service) -> HttpUrl:
     return await users_service.GetAvatar(user_id=user_id)
 
 
 @router.post('/get_avatar_by_token')
-async def get_avatar(usr: ann_user_need):
+async def get_avatar(usr: ann_user_need) -> HttpUrl:
     return usr.avatar_path
 
 
