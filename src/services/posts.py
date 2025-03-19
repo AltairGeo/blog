@@ -7,9 +7,9 @@ import exceptions.users
 import security
 from models.models import PostsModel
 from repositories.posts import PostsRepository
-from repositories.users import UsersRepository
 from schemas.posts import CreatePost
 from schemas.posts import DeletePostSchema, FullPost, ChangePostSchema
+from schemas.tables import UsersSchema
 from schemas.token import Token
 
 
@@ -17,18 +17,12 @@ class PostsService:
     def __init__(self, posts_repo: PostsRepository):
         self.posts_repo: PostsRepository = posts_repo()
 
-    async def CreatePost(self, data: CreatePost):
-        security.token.check_token_to_expire(Token(token=data.token))
-        decoded = security.token.decode_jwt_token(Token(token=data.token))
-        UserRepo = UsersRepository()
-        user = await UserRepo.find_one(id=decoded.id, email=decoded.email)
-        if not user:
-            raise exceptions.users.UserNotFound
+    async def CreatePost(self, data: CreatePost, usr: UsersSchema):
         return await self.posts_repo.create(
             {
                 "title": data.title,
                 "text": data.text,
-                "author_id": user.id,
+                "author_id": usr.id,
                 "created_at": datetime.now(timezone.utc).replace(tzinfo=None)
             }
         )
@@ -37,16 +31,13 @@ class PostsService:
         resp = await self.posts_repo.get_ten_lasts()
         return resp
 
-    async def DeletePost(self, data: DeletePostSchema) -> bool:
-        security.token.check_token_to_expire(Token(token=data.token))
-        decoded = security.token.decode_jwt_token(Token(token=data.token))
-
+    async def DeletePost(self, data: DeletePostSchema, usr: UsersSchema) -> bool:
         post: PostsModel = await self.posts_repo.find_one(id=data.id)
 
         if not post:
             raise exceptions.posts.PostNotFound
 
-        if post.author_id != decoded.id:
+        if post.author_id != usr.id:
             raise exceptions.posts.ItsNotYour
 
         return await self.posts_repo.delete(id=data.id)
@@ -78,14 +69,11 @@ class PostsService:
             )
         return final
 
-    async def ChangePost(self, data: ChangePostSchema):
-        security.token.check_token_to_expire(Token(token=data.token))
-        decoded = security.token.decode_jwt_token(Token(token=data.token))
-
+    async def ChangePost(self, data: ChangePostSchema, usr: UsersSchema) -> bool:
         post: PostsModel = await self.posts_repo.find_one(id=data.post_id)
         if not post:
             raise exceptions.posts.PostNotFound
-        if post.author_id != decoded.id:
+        if post.author_id != usr.id:
             raise exceptions.posts.ItsNotYour
         else:
             change = await self.posts_repo.update(
@@ -94,7 +82,7 @@ class PostsService:
                     "text": data.text,
                 },
                 id=data.post_id,
-                author_id=decoded.id,
+                author_id=usr.id,
             )
             return change
 

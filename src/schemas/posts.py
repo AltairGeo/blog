@@ -7,7 +7,6 @@ class CreatePost(BaseSchema):
     title: str
     text: str
     # created_at: datetime = datetime.now(timezone.utc)
-    token: str
 
 
 class FullPost(BaseSchema):
@@ -36,11 +35,9 @@ class ElasticPostResult(BaseSchema):
 
 class DeletePostSchema(BaseSchema):
     id: int
-    token: str
 
 
 class ChangePostSchema(BaseSchema):
-    token: str
     post_id: int
     title: str
     text: str

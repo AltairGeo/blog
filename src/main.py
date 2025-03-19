@@ -18,6 +18,7 @@ logging.basicConfig(
 
 app = FastAPI(
     title="BlogAPI",
+
 )
 
 app.add_middleware(

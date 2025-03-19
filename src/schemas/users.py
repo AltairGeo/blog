@@ -18,7 +18,6 @@ class LoginSchema(BaseSchema):
 
 
 class ChangePasswordSchema(BaseSchema):
-    token: str
     old_password: str
     new_password: str
 
@@ -38,6 +37,3 @@ class AvatarUpload(BaseSchema):
 class ChangeNameSchema(BaseSchema):
     new_name: str
     token: str
-
-    def get_token(self):
-        return Token(token=self.token)

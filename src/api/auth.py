@@ -1,11 +1,13 @@
 from typing import Annotated
 
 from fastapi import APIRouter
-from fastapi import Depends
+from fastapi import Depends, Form
+from fastapi.security import OAuth2PasswordRequestForm
 
-import schemas
 from api.depends import auth_service
-from schemas.users import RegisterSchema
+from schemas.users import RegisterSchema, LoginSchema
+import exceptions
+from schemas.token import Token
 from services.auth import AuthService
 
 router = APIRouter(
@@ -13,15 +15,15 @@ router = APIRouter(
     tags=["Users", "Auth"]
 )
 
-
 @router.post('/register')
-async def register(data: RegisterSchema,
-                   auth_service: Annotated[AuthService, Depends(auth_service)]) -> schemas.token.Token:
+async def register(data: Annotated[RegisterSchema, Form()],
+                   auth_service: Annotated[AuthService, Depends(auth_service)]) -> Token:
     resp = await auth_service.Register(data)
-    return resp
-
+    if resp:
+        return await auth_service.Login(data=LoginSchema(email=data.email, password=data.password))
+    else: raise exceptions.base.SomethingWasWrong
 
 @router.post('/login')
-async def login(data: schemas.users.LoginSchema,
-                auth_service: Annotated[AuthService, Depends(auth_service)]) -> schemas.token.Token:
-    return await auth_service.Login(data=data)
+async def login(data: Annotated[OAuth2PasswordRequestForm, Depends()],
+                auth_service: Annotated[AuthService, Depends(auth_service)]) -> Token:
+    return await auth_service.Login(data=LoginSchema(email=data.username, password=data.password))

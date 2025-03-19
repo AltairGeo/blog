@@ -1,4 +1,8 @@
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
+
 from elasticsearch import AsyncElasticsearch
+from typing import Annotated
 
 from repositories.elastic import ElasticRepo
 from repositories.posts import PostsRepository
@@ -10,7 +14,10 @@ from services.posts import PostsService
 from services.s3 import S3Service
 from services.users import UsersService
 from settings import AppSettings
+import asyncio
 
+
+oauth_schema = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def users_service():
     return UsersService(UsersRepository)
@@ -47,3 +54,10 @@ def s3_service():
     ),
         UsersRepository()
     )
+
+
+def get_current_user(
+        token: Annotated[str, Depends(oauth_schema)],
+        serv_auth: Annotated[AuthService, Depends(auth_service)]
+):
+    return asyncio.run(serv_auth.GetUserWithToken(token))
