@@ -1,4 +1,5 @@
 from exceptions.base import Base
+from fastapi import status, HTTPException
 
 
 class UserAlreadyCreate(Base):
@@ -11,9 +12,12 @@ class UserNotFound(Base):
         super().__init__(404, "User not found 0_o!")
 
 
-class UncorrectEmailOrPassword(Base):
+class UncorrectEmailOrPassword(HTTPException):
     def __init__(self):
-        super().__init__(400, "Incorrect email or password!")
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"})
 
 
 class SamePasswords(Base):

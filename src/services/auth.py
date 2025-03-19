@@ -7,24 +7,22 @@ from repositories.users import UsersRepository
 
 
 class AuthService:
-    def __init__(self, users_repo: UsersRepository) -> schemas.token.Token:
+    def __init__(self, users_repo: UsersRepository):
         self.users_repo: UsersRepository = users_repo()
 
-    async def Register(self, user: schemas.users.RegisterSchema) -> schemas.token.Token:
+    async def Register(self, user: schemas.users.RegisterSchema):
         """
         Registration.
         """
-        user_dict = user.model_dump()  # From pydantic schema to dictionary
         user_found = await self.users_repo.find_one(email=user.email)
-        if user_found:  # If user exists throw error
+        if user_found:
             raise exceptions.users.UserAlreadyCreate
 
-        user_dict["password"] = security.utils.create_hash(user_dict["password"])  # Hashing password
+        user.password = security.utils.create_hash(user.password)  # Hashing password
+        user_dict = user.model_dump()
         resp: UsersModel = await self.users_repo.create(user_dict)
         user_schema = resp.to_schema()
-        return security.utils.token_from_user_schema(
-            schema=user_schema
-        )
+        return user_schema
 
     async def Login(self, data: schemas.users.LoginSchema) -> schemas.token.Token:
         """
@@ -37,6 +35,11 @@ class AuthService:
         user = user.to_schema()
 
         if user.password == hash_pass:
-            return security.utils.token_from_user_schema(user)
+            token_str = security.token.create_access_token(data={"id": user.id, "email": user.email})
+            print(token_str)
+            return schemas.token.Token(
+                access_token=token_str,
+                token_type="bearer",
+            )
         else:
             raise exceptions.users.UncorrectEmailOrPassword

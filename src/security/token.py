@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import jwt
 
 import exceptions
@@ -8,28 +8,25 @@ from schemas.token import Token, TokenData
 from settings import AppSettings
 
 
-def generate_jwt_token(data: TokenData) -> Token:
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
     try:
-        return Token(
-            token=jwt.encode(
-                data.model_dump(),
-                AppSettings.jwt_secret,
-                AppSettings.jwt_algo[0],
-            )
-        )
+        to_encode = data.copy()
+        if expires_delta:
+            expire = datetime.now(timezone.utc) + expires_delta
+        else:
+            expire = datetime.now(timezone.utc) + timedelta(minutes=AppSettings.token_life_time)
+        to_encode.update({"exp": expire})
+        print(to_encode)
+        encoded_jwt = jwt.encode(to_encode, AppSettings.jwt_secret, AppSettings.jwt_algo[0])
+        return encoded_jwt
     except Exception as e:
         logging.error(str(e))
-        raise exceptions.token.DecodingWasFailed
+        raise exceptions.token.CreationTokenWasFailed
 
 
 def decode_jwt_token(token: Token) -> TokenData:
     try:
-        decode = jwt.decode(token.token, AppSettings.jwt_secret, AppSettings.jwt_algo)
-        return TokenData(
-            id=decode["id"],
-            email=decode["email"],
-            expires_at=decode["expires_at"]
-        )
+        return jwt.decode(token.token, AppSettings.jwt_secret, AppSettings.jwt_algo)
     except Exception as e:
         logging.error(str(e))
         raise exceptions.token.DecodingWasFailed
