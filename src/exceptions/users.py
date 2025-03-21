@@ -1,5 +1,6 @@
-from exceptions.base import Base
 from fastapi import status, HTTPException
+
+from exceptions.base import Base
 
 
 class UserAlreadyCreate(Base):

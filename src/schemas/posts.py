@@ -26,12 +26,14 @@ class FullPost(BaseSchema):
             "author": self.author_name,
         }
 
+
 class ElasticPostResult(BaseSchema):
     id: int
     title: str
     text: str
     created_at: datetime = datetime.now()
     author: str
+
 
 class DeletePostSchema(BaseSchema):
     id: int

@@ -1,8 +1,8 @@
 from os import getenv
 from typing import List
-from pydantic import HttpUrl, Field
 
 import dotenv
+from pydantic import HttpUrl, Field
 
 dotenv.load_dotenv()
 

@@ -1,8 +1,8 @@
 from typing import Annotated
 from typing import List
-from pydantic import HttpUrl
 
-from fastapi import APIRouter, Depends, UploadFile, File, Form
+from fastapi import APIRouter, Depends, UploadFile, File
+from pydantic import HttpUrl
 
 import schemas
 from api.depends import users_service, s3_service, get_current_user
@@ -28,9 +28,14 @@ async def change_password(
     return await users_service.ChangePassword(ch_data=data, usr=usr)
 
 
-@router.post('/get_self')
-async def get_self(token: schemas.token.Token, users_service: ann_users_service) -> schemas.users.BaseInfo:
-    return await users_service.GetSelfByToken(token=token)
+@router.get('/get_self')
+async def get_self(usr: ann_user_need) -> schemas.users.BaseInfo:
+    return schemas.users.BaseInfo(
+        id=usr.id,
+        email=usr.email,
+        nickname=usr.nickname,
+        role=usr.role
+    )
 
 
 @router.get('/get_user_posts')

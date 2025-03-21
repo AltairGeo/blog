@@ -49,6 +49,7 @@ async def delete_post(
     else:
         return False
 
+
 @router.get('/get_post')
 async def get_post(post_id: int, posts_service: ann_posts_service):
     return await posts_service.GetPostByID(post_id=post_id)
@@ -74,6 +75,7 @@ async def change_post(
             new_post.post_id,
             {"title": new_post.title, "text": new_post.text})
     return res
+
 
 @router.get('/count')
 async def get_count_posts(posts_service: ann_posts_service) -> int:

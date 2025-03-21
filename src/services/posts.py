@@ -4,13 +4,11 @@ from typing import List
 
 import exceptions
 import exceptions.users
-import security
 from models.models import PostsModel
 from repositories.posts import PostsRepository
 from schemas.posts import CreatePost
 from schemas.posts import DeletePostSchema, FullPost, ChangePostSchema
 from schemas.tables import UsersSchema
-from schemas.token import Token
 
 
 class PostsService:

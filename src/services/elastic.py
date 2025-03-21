@@ -2,11 +2,11 @@ from typing import Dict, Any
 
 from fastapi import HTTPException
 
+from exceptions.posts import PageLessZero
 from repositories.base import AbstractElasticRepo
 from repositories.posts import PostsRepository
 from schemas.elastic import SearchResult
 from schemas.posts import FullPost
-from exceptions.posts import PageLessZero
 
 
 class ElasticService:

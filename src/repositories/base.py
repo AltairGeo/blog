@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional, List
 from logging import warning
+from typing import Dict, Any, Optional, List
 
 from elasticsearch import AsyncElasticsearch
 

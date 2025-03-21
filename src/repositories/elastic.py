@@ -1,5 +1,5 @@
-from typing import Dict, Any, List, Optional
 import logging
+from typing import Dict, Any, List, Optional
 
 from repositories.base import AbstractElasticRepo
 from schemas.posts import FullPost

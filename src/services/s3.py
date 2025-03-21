@@ -1,5 +1,3 @@
-import schemas
-import security
 from repositories.s3 import S3Repo
 from repositories.users import UsersRepository
 from schemas.tables import UsersSchema
@@ -14,4 +12,3 @@ class S3Service:
         resp: str = await self.s3_repo.upload_avatar(key=str(usr.id), file=file)  # Upload avatar to s3
         update = await self.users_repo.update({"avatar_path": resp}, id=usr.id, email=usr.email)
         return resp
-

@@ -1,8 +1,9 @@
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
+import asyncio
+from typing import Annotated
 
 from elasticsearch import AsyncElasticsearch
-from typing import Annotated
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 
 from repositories.elastic import ElasticRepo
 from repositories.posts import PostsRepository
@@ -14,10 +15,9 @@ from services.posts import PostsService
 from services.s3 import S3Service
 from services.users import UsersService
 from settings import AppSettings
-import asyncio
-
 
 oauth_schema = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
 
 def users_service():
     return UsersService(UsersRepository)

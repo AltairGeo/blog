@@ -1,10 +1,10 @@
-import uvicorn
 import logging
+
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import all_routers
-
 
 logging.basicConfig(
     format="[{levelname}]=[{asctime}]==> {message}",
@@ -14,7 +14,6 @@ logging.basicConfig(
     filemode="a",
     encoding="utf-8",
 )
-
 
 app = FastAPI(
     title="BlogAPI",

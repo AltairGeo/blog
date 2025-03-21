@@ -22,9 +22,10 @@ async def re_index(search_service: ann_elastic_service, background_tasks: Backgr
     else:
         return False
 
+
 @router.get('/find')
 async def search_post(query: str, page: int, search_service: ann_elastic_service) -> SearchResult:
-     return await search_service.SearchPost(
+    return await search_service.SearchPost(
         page=page,
         query=query,
         sort={"created_at": {"order": "desc"}}

@@ -1,5 +1,6 @@
-from typing import List
 import logging
+from typing import List
+
 from sqlalchemy import select
 
 from db.core import async_session_maker
