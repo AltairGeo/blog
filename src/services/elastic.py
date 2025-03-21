@@ -33,9 +33,25 @@ class ElasticService:
         if page <= 0:
             raise PageLessZero
         el_query = {
-            "multi_match": {
-                "query": query,
-                "fields": ["title", "text", "author"],
+            "bool": {
+                "should": [
+                    {
+                        "multi_match": {
+                            "query": query,
+                            "fields": ["title", "text", "author"],
+                            "fuzziness": "AUTO",
+                            "operator": "or"
+                        }
+                    },
+                    {
+                        "multi_match": {
+                            "query": query,
+                            "fields": ["title", "text", "author"],
+                            "type": "phrase_prefix",
+                        }
+                    }
+                ],
+                "minimum_should_match": 1
             }
         }
         result = await self.elastic_repo.search_in_index(query=el_query, sort=sort, page=page)

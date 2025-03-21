@@ -54,7 +54,7 @@ async def get_avatar_by_id(user_id: int, users_service: ann_users_service) -> Ht
     return await users_service.GetAvatar(user_id=user_id)
 
 
-@router.post('/get_avatar_by_token')
+@router.get('/get_avatar_by_token')
 async def get_avatar(usr: ann_user_need) -> HttpUrl:
     return usr.avatar_path
 
