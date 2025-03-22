@@ -19,9 +19,11 @@ router = APIRouter(
 @router.post('/register')
 async def register(data: Annotated[RegisterSchema, Form()],
                    auth_service: Annotated[AuthService, Depends(auth_service)]) -> Token:
+    password = data.password
     resp = await auth_service.Register(data)
     if resp:
-        return await auth_service.Login(data=LoginSchema(email=data.email, password=data.password))
+        schema_login = LoginSchema(email=data.email, password=password)
+        return await auth_service.Login(data=schema_login)
     else:
         raise exceptions.base.SomethingWasWrong
 
