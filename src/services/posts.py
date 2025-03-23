@@ -9,6 +9,7 @@ from repositories.posts import PostsRepository
 from schemas.posts import CreatePost
 from schemas.posts import DeletePostSchema, FullPost, ChangePostSchema
 from schemas.tables import UsersSchema
+from utils.posts import calc_likes_and_dislikes
 
 
 class PostsService:
@@ -42,9 +43,7 @@ class PostsService:
 
     async def GetPostByID(self, post_id: int) -> FullPost:
         resp: PostsModel = await self.posts_repo.get_full_post(post_id=post_id)
-        print(resp.likes)
-        likes = sum(1 for like in resp.likes if like.is_like)
-        dislikes = sum(1 for like in resp.likes if not like.is_like)
+        likes = calc_likes_and_dislikes(resp.likes)
         if not resp:
             raise exceptions.posts.PostNotFound
 
@@ -55,18 +54,21 @@ class PostsService:
             created_at=resp.created_at,
             author_id=resp.author_id,
             author_name=resp.author.nickname,
-            likes=likes,
-            dislikes=dislikes
+            likes=likes["likes"],
+            dislikes=likes['dislikes']
         )
 
     async def GetLastPostsPage(self, page: int):
         resp: List[PostsModel] = await self.posts_repo.get_last_page_posts(page=page)
         final = []
         for i in resp:
+            ratings = calc_likes_and_dislikes(i.likes)
             final.append(
                 FullPost(
                     **i.to_schema().model_dump(),
-                    author_name=i.author.nickname
+                    author_name=i.author.nickname,
+                    likes=ratings['likes'],
+                    dislikes=ratings['dislikes']
                 )
             )
         return final

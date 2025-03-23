@@ -9,6 +9,7 @@ import utils
 from db.core import async_session_maker
 from models.models import PostsModel
 from repositories.alchemy_repo import SQLAlchemyRepository
+from utils.posts import calc_likes_and_dislikes
 
 
 class PostsRepository(SQLAlchemyRepository):
@@ -26,8 +27,9 @@ class PostsRepository(SQLAlchemyRepository):
                 final = []
 
                 for i in result:
-                    await session.refresh(i, attribute_names=['author'])
+                    await session.refresh(i, attribute_names=['author', "likes"])
                     username = i.author.nickname
+                    ratings = calc_likes_and_dislikes(i.likes)
                     final.append(  # Create schemas
                         schemas.posts.FullPost(
                             id=i.id,
@@ -35,7 +37,10 @@ class PostsRepository(SQLAlchemyRepository):
                             text=i.text,
                             created_at=i.created_at,
                             author_id=i.author_id,
-                            author_name=username
+                            author_name=username,
+                            likes=ratings['likes'],
+                            dislikes=ratings['dislikes']
+
                         )
                     )
                 return final
@@ -66,7 +71,7 @@ class PostsRepository(SQLAlchemyRepository):
                     raise exceptions.posts.PostsNotFound
 
                 for i in result:
-                    await session.refresh(i, attribute_names=["author"])
+                    await session.refresh(i, attribute_names=["author", 'likes'])
 
                 return result
         except Exception as e:

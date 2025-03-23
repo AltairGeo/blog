@@ -89,5 +89,5 @@ async def like_post(post_id: int, like_service: ann_likes_service, usr: ann_user
     return await like_service.like_post(post_id=post_id, user_id=usr.id, is_like=True)
 
 @router.get('/{post_id}/dislike')
-async def like_post(post_id: int, like_service: ann_likes_service, usr: ann_user_need):
+async def dislike_post(post_id: int, like_service: ann_likes_service, usr: ann_user_need):
     return await like_service.like_post(post_id=post_id, user_id=usr.id, is_like=False)
