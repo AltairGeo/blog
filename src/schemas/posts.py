@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from schemas.base import BaseSchema
 
@@ -16,6 +17,8 @@ class FullPost(BaseSchema):
     created_at: datetime = datetime.now()
     author_id: int
     author_name: str
+    likes: Optional[int] = None
+    dislikes: Optional[int] = None
 
     def to_elastic(self) -> dict:
         return {

@@ -3,14 +3,16 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends, BackgroundTasks
 
 import schemas
-from api.depends import posts_service, elastic_service, get_current_user
+from api.depends import posts_service, elastic_service, get_current_user, likes_service
 from schemas.tables import UsersSchema
 from services.elastic import ElasticService
 from services.posts import PostsService
+from services.likes import LikesService
 
 ann_user_need = Annotated[UsersSchema, Depends(get_current_user)]
 ann_posts_service = Annotated[PostsService, Depends(posts_service)]
 ann_elastic_service = Annotated[ElasticService, Depends(elastic_service)]
+ann_likes_service = Annotated[LikesService, Depends(likes_service)]
 
 router = APIRouter(
     prefix="/posts",
@@ -80,3 +82,12 @@ async def change_post(
 @router.get('/count')
 async def get_count_posts(posts_service: ann_posts_service) -> int:
     return await posts_service.GetPostsCount()
+
+
+@router.get('/{post_id}/like')
+async def like_post(post_id: int, like_service: ann_likes_service, usr: ann_user_need):
+    return await like_service.like_post(post_id=post_id, user_id=usr.id, is_like=True)
+
+@router.get('/{post_id}/dislike')
+async def like_post(post_id: int, like_service: ann_likes_service, usr: ann_user_need):
+    return await like_service.like_post(post_id=post_id, user_id=usr.id, is_like=False)

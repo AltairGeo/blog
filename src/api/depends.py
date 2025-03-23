@@ -6,11 +6,13 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from repositories.elastic import ElasticRepo
+from repositories.likes import LikesRepository
 from repositories.posts import PostsRepository
 from repositories.s3 import S3Repo
 from repositories.users import UsersRepository
 from services.auth import AuthService
 from services.elastic import ElasticService
+from services.likes import LikesService
 from services.posts import PostsService
 from services.s3 import S3Service
 from services.users import UsersService
@@ -61,3 +63,7 @@ def get_current_user(
         serv_auth: Annotated[AuthService, Depends(auth_service)]
 ):
     return asyncio.run(serv_auth.GetUserWithToken(token))
+
+
+def likes_service():
+    return LikesService(likes_repo=LikesRepository)

@@ -49,7 +49,7 @@ class PostsRepository(SQLAlchemyRepository):
                 query = select(PostsModel).filter_by(id=post_id)
                 resp = await session.execute(query)
                 post = resp.scalar_one_or_none()
-                await session.refresh(post, attribute_names=["author"])
+                await session.refresh(post, attribute_names=["author", "likes"])
                 return post
         except Exception as e:
             logging.error(str(e))

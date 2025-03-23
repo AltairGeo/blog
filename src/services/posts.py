@@ -42,7 +42,9 @@ class PostsService:
 
     async def GetPostByID(self, post_id: int) -> FullPost:
         resp: PostsModel = await self.posts_repo.get_full_post(post_id=post_id)
-
+        print(resp.likes)
+        likes = sum(1 for like in resp.likes if like.is_like)
+        dislikes = sum(1 for like in resp.likes if not like.is_like)
         if not resp:
             raise exceptions.posts.PostNotFound
 
@@ -52,7 +54,9 @@ class PostsService:
             text=resp.text,
             created_at=resp.created_at,
             author_id=resp.author_id,
-            author_name=resp.author.nickname
+            author_name=resp.author.nickname,
+            likes=likes,
+            dislikes=dislikes
         )
 
     async def GetLastPostsPage(self, page: int):
