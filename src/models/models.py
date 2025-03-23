@@ -34,6 +34,7 @@ class UsersModel(ModelBase):  # Users table
     id: Mapped[int] = mapped_column(primary_key=True)
     nickname: Mapped[str] = mapped_column(String(50))
     email: Mapped[str] = mapped_column(unique=True)
+    bio: Mapped[str] = mapped_column(String(100), nullable=True, unique=False)
     password: Mapped[str]
     avatar_path: Mapped[str] = mapped_column(nullable=True)
     posts: Mapped[List["PostsModel"]] = relationship(back_populates="author")
