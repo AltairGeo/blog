@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import String, ForeignKey, Boolean, UniqueConstraint, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.core import ModelBase
@@ -17,6 +17,9 @@ class PostsModel(ModelBase):  # Table for posts
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     author: Mapped["UsersModel"] = relationship(back_populates="posts")
     created_at: Mapped[datetime]
+    likes: Mapped[List["PostsLikesModel"]] = relationship(
+        "PostsLikesModel", back_populates="post", cascade="all, delete-orphan"
+    )
 
     def to_schema(self) -> PostsSchema:
         return PostsSchema(
@@ -49,3 +52,17 @@ class UsersModel(ModelBase):  # Users table
             avatar_path=self.avatar_path,
             role=self.role
         )
+
+
+class PostsLikesModel(ModelBase):
+    __tablename__ = "posts_likes"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id"))
+    is_like: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    post: Mapped["PostsModel"] = relationship(back_populates="likes")
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "post_id", name="user_post_unique"),
+        Index("idx_post_user", "post_id", "user_id")
+    )
