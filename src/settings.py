@@ -24,7 +24,7 @@ class Settings:
         self.elastic_password: str = getenv("ELASTIC_PASSWORD")
 
         self.jwt_algo: List[str] = ["HS256"]
-        self.token_life_time: int = 30  # In minutes
+        self.token_life_time: int = 120  # In minutes
 
 
 AppSettings = Settings()
