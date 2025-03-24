@@ -43,6 +43,8 @@ class PostsService:
 
     async def GetPostByID(self, post_id: int) -> FullPost:
         resp: PostsModel = await self.posts_repo.get_full_post(post_id=post_id)
+        if not resp:
+            raise exceptions.posts.PostNotFound
         likes = calc_likes_and_dislikes(resp.likes)
         if not resp:
             raise exceptions.posts.PostNotFound
