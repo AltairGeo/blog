@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 from math import ceil
-from string import punctuation
 from typing import List
 
 import exceptions
