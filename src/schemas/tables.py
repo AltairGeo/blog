@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import EmailStr
+from pydantic import Field
 
 from schemas.base import BaseSchema
 
@@ -13,6 +14,7 @@ class UsersSchema(BaseSchema):
     password: str
     avatar_path: Optional[str]
     role: Optional[str]
+    bio: Optional[str] = Field(default=None, max_length=100)
 
 
 class PostsSchema(BaseSchema):

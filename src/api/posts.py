@@ -52,7 +52,7 @@ async def delete_post(
         return False
 
 
-@router.get('/get_post')
+@router.get('/{post_id}')
 async def get_post(post_id: int, posts_service: ann_posts_service):
     return await posts_service.GetPostByID(post_id=post_id)
 

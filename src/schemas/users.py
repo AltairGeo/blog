@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, Optional
 
-from pydantic import EmailStr
+from pydantic import EmailStr, Field
+from schemas.tables import UsersSchema
 
 from schemas.base import BaseSchema
 from schemas.token import Token
@@ -27,6 +28,7 @@ class BaseInfo(BaseSchema):
     email: EmailStr
     nickname: str
     role: Any
+    bio: Optional[str] = Field(default=None, max_length=100)
 
 
 class AvatarUpload(BaseSchema):
@@ -37,3 +39,9 @@ class AvatarUpload(BaseSchema):
 class ChangeNameSchema(BaseSchema):
     new_name: str
     token: str
+
+
+class ChangeBIO(BaseSchema):
+    bio: str = Field(max_length=100)
+    usr_id: int
+    usr_mail: EmailStr

@@ -7,6 +7,7 @@ import schemas
 import security
 from models.models import UsersModel
 from repositories.users import UsersRepository
+from schemas.users import ChangeBIO
 
 
 class UsersService:
@@ -53,3 +54,6 @@ class UsersService:
 
     async def ChangeName(self, email: str, new_name: str) -> bool:
         return await self.users_repo.update({"nickname": new_name}, email=email)
+
+    async def ChangeBio(self, bio: ChangeBIO) -> bool:
+        return await self.users_repo.update({"bio": bio.bio}, id=bio.usr_id, email=bio.usr_mail)

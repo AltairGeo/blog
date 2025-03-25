@@ -7,6 +7,7 @@ from pydantic import HttpUrl
 import schemas
 from api.depends import users_service, s3_service, get_current_user
 from schemas.tables import PostsSchema, UsersSchema
+from schemas.users import ChangeBIO
 from services.s3 import S3Service
 from services.users import UsersService
 
@@ -34,7 +35,8 @@ async def get_self(usr: ann_user_need) -> schemas.users.BaseInfo:
         id=usr.id,
         email=usr.email,
         nickname=usr.nickname,
-        role=usr.role
+        role=usr.role,
+        bio=usr.bio,
     )
 
 
@@ -62,3 +64,7 @@ async def get_avatar(usr: ann_user_need) -> HttpUrl:
 @router.post('/change_name')
 async def change_name(new_name, usr: ann_user_need, users_service: ann_users_service) -> bool:
     return await users_service.ChangeName(email=usr.email, new_name=new_name)
+
+@router.post('/change_bio')
+async def change_bio(bio: str, usr: ann_user_need, users_service: ann_users_service):
+    return await users_service.ChangeBio(ChangeBIO(bio=bio, usr_id=usr.id, usr_mail=usr.email))

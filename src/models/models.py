@@ -50,7 +50,8 @@ class UsersModel(ModelBase):  # Users table
             email=self.email,
             password=self.password,
             avatar_path=self.avatar_path,
-            role=self.role
+            role=self.role,
+            bio=self.bio,
         )
 
 
