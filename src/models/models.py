@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import String, ForeignKey, Boolean, UniqueConstraint, Index
+from sqlalchemy import String, ForeignKey, Boolean, UniqueConstraint, Index, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.expression import false
 
 from db.core import ModelBase
 from schemas.tables import PostsSchema, UsersSchema
@@ -20,6 +21,7 @@ class PostsModel(ModelBase):  # Table for posts
     likes: Mapped[List["PostsLikesModel"]] = relationship(
         "PostsLikesModel", back_populates="post", cascade="all, delete-orphan"
     )
+    public: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     def to_schema(self) -> PostsSchema:
         return PostsSchema(
@@ -28,6 +30,7 @@ class PostsModel(ModelBase):  # Table for posts
             text=self.text,
             author_id=self.author_id,
             created_at=self.created_at,
+            public=self.public,
         )
 
 

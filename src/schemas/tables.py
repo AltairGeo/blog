@@ -23,3 +23,4 @@ class PostsSchema(BaseSchema):
     text: str
     author_id: int
     created_at: datetime
+    public: bool

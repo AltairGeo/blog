@@ -94,3 +94,9 @@ async def like_post(post_id: int, like_service: ann_likes_service, usr: ann_user
 @router.get('/{post_id}/dislike')
 async def dislike_post(post_id: int, like_service: ann_likes_service, usr: ann_user_need):
     return await like_service.like_post(post_id=post_id, user_id=usr.id, is_like=False)
+
+
+@router.get('/{post_id}/status/{public}')
+async def change_post_status(post_id: int, public: bool, usr: ann_user_need, posts_service: ann_posts_service):
+    return await posts_service.ChangeStatus(usr=usr, post_id=post_id, public=public)
+

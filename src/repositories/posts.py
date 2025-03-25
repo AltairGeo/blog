@@ -18,7 +18,7 @@ class PostsRepository(SQLAlchemyRepository):
     async def get_ten_lasts(self):
         try:
             async with async_session_maker() as session:
-                stmnt = select(self.model).order_by(self.model.created_at.desc()).limit(10)
+                stmnt = select(self.model).filter_by(public=True).order_by(self.model.created_at.desc()).limit(10)
                 result = await session.execute(stmnt)
                 result = result.scalars().all()
                 if result == []:
@@ -39,8 +39,8 @@ class PostsRepository(SQLAlchemyRepository):
                             author_id=i.author_id,
                             author_name=username,
                             likes=ratings['likes'],
-                            dislikes=ratings['dislikes']
-
+                            dislikes=ratings['dislikes'],
+                            public=i.public,
                         )
                     )
                 return final
@@ -51,7 +51,7 @@ class PostsRepository(SQLAlchemyRepository):
     async def get_full_post(self, post_id: int) -> Optional[PostsModel]:
         try:
             async with async_session_maker() as session:
-                query = select(PostsModel).filter_by(id=post_id)
+                query = select(PostsModel).filter_by(id=post_id, public=True)
                 resp = await session.execute(query)
                 post = resp.scalar_one_or_none()
                 await session.refresh(post, attribute_names=["author", "likes"])
@@ -63,7 +63,7 @@ class PostsRepository(SQLAlchemyRepository):
         try:
             async with async_session_maker() as session:
                 offset = utils.posts.calculation_offset(page=page)
-                stmnt = select(PostsModel).order_by(PostsModel.created_at.desc()).offset(offset=offset).limit(10)
+                stmnt = select(PostsModel).filter_by(public=True).order_by(PostsModel.created_at.desc()).offset(offset=offset).limit(10)
                 result = await session.execute(stmnt)
                 result = result.scalars().all()
 

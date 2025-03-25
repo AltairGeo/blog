@@ -65,6 +65,6 @@ async def get_avatar(usr: ann_user_need) -> HttpUrl:
 async def change_name(new_name, usr: ann_user_need, users_service: ann_users_service) -> bool:
     return await users_service.ChangeName(email=usr.email, new_name=new_name)
 
-@router.post('/change_bio')
+@router.get('/change_bio')
 async def change_bio(bio: str, usr: ann_user_need, users_service: ann_users_service):
     return await users_service.ChangeBio(ChangeBIO(bio=bio, usr_id=usr.id, usr_mail=usr.email))

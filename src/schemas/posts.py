@@ -19,6 +19,7 @@ class FullPost(BaseSchema):
     author_name: str
     likes: Optional[int] = None
     dislikes: Optional[int] = None
+    public: bool
 
     def to_elastic(self) -> dict:
         return {

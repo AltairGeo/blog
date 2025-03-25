@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from math import ceil
+from string import punctuation
 from typing import List
 
 import exceptions
@@ -22,7 +23,8 @@ class PostsService:
                 "title": data.title,
                 "text": data.text,
                 "author_id": usr.id,
-                "created_at": datetime.now(timezone.utc).replace(tzinfo=None)
+                "created_at": datetime.now(timezone.utc).replace(tzinfo=None),
+                "public": False,
             }
         )
 
@@ -57,7 +59,8 @@ class PostsService:
             author_id=resp.author_id,
             author_name=resp.author.nickname,
             likes=likes["likes"],
-            dislikes=likes['dislikes']
+            dislikes=likes['dislikes'],
+            public=resp.public,
         )
 
     async def GetLastPostsPage(self, page: int):
@@ -96,3 +99,12 @@ class PostsService:
         posts = await self.posts_repo.find_all()
         posts_count = len(posts)
         return ceil(posts_count / 10)
+
+    async def ChangeStatus(self, usr: UsersSchema, post_id: int, public: bool) -> bool:
+        post: PostsModel = await self.posts_repo.find_one(id=post_id)
+        if post.author_id != usr.id:
+            raise exceptions.posts.ItsNotYour
+
+        return await self.posts_repo.update({"public": public}, id=post_id)
+
+
