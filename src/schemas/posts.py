@@ -43,6 +43,5 @@ class DeletePostSchema(BaseSchema):
 
 
 class ChangePostSchema(BaseSchema):
-    post_id: int
     title: str
     text: str

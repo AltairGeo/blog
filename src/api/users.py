@@ -40,7 +40,7 @@ async def get_self(usr: ann_user_need) -> schemas.users.BaseInfo:
     )
 
 
-@router.get('/get_user_posts')
+@router.get('/posts/{user_id}')
 async def get_user_posts(user_id: int, users_service: ann_users_service) -> List[PostsSchema]:
     return await users_service.GetUserPosts(user_id=user_id)
 

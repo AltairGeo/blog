@@ -62,15 +62,16 @@ async def getting_last_posts_page(page: int, posts_service: ann_posts_service) -
     return await posts_service.GetLastPostsPage(page=page)
 
 
-@router.put("/change_post")
+@router.put("/{post_id}")
 async def change_post(
+        post_id: int,
         new_post: schemas.posts.ChangePostSchema,
         posts_service: ann_posts_service,
         search_service: ann_elastic_service,
         background_tasks: BackgroundTasks,
         usr: ann_user_need
 ):
-    res = await posts_service.ChangePost(new_post, usr)
+    res = await posts_service.ChangePost(post_id=post_id, data=new_post, usr=usr)
     if res:
         background_tasks.add_task(
             search_service.update_post,
