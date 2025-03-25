@@ -19,3 +19,7 @@ class ItsNotYour(Base):
 class PageLessZero(Base):
     def __init__(self):
         super().__init__(400, "Page less zero!")
+
+class NotPublic(Exception):
+    def __init__(self):
+        super.__init__("Post was not public.")

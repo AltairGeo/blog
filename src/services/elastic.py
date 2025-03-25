@@ -2,6 +2,7 @@ from typing import Dict, Any
 
 from fastapi import HTTPException
 
+import exceptions.posts
 from exceptions.posts import PageLessZero
 from repositories.base import AbstractElasticRepo
 from repositories.posts import PostsRepository
@@ -19,14 +20,20 @@ class ElasticService:
 
     async def AddPostToIndexById(self, post_id: int) -> bool:
         post = await self.posts_repo.get_full_post(post_id)
+
         full_post = FullPost(
             id=post.id,
             title=post.title,
             author_id=post.author_id,
             created_at=post.created_at,
             author_name=post.author.nickname,
-            text=post.text
+            text=post.text,
+            public=post.public
         )
+
+        if not full_post.public:
+            raise exceptions.posts.NotPublic
+
         return await self.AddPostToIndex(full_post)
 
     async def SearchPost(self, query: str, sort: Dict[str, Any], page: int) -> SearchResult:

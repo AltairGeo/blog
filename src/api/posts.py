@@ -25,11 +25,8 @@ async def create_post(
         data: schemas.posts.CreatePost,
         usr: ann_user_need,
         posts_service: ann_posts_service,
-        search_service: ann_elastic_service,
-        background_tasks: BackgroundTasks
 ):
     result = await posts_service.CreatePost(data, usr)
-    background_tasks.add_task(search_service.AddPostToIndexById, result.id)
     return result
 
 
@@ -58,7 +55,9 @@ async def getting_last_posts_page(page: int, posts_service: ann_posts_service) -
     return await posts_service.GetLastPostsPage(page=page)
 
 
-
+@router.get('/self/{post_id}')
+async def get_self_post(post_id: int, usr: ann_user_need, posts_service: ann_posts_service):
+    return await posts_service.GetSelfPost(usr=usr, post_id=post_id)
 
 @router.get('/count')
 async def get_count_posts(posts_service: ann_posts_service) -> int:
@@ -97,6 +96,19 @@ async def dislike_post(post_id: int, like_service: ann_likes_service, usr: ann_u
 
 
 @router.get('/{post_id}/status/{public}')
-async def change_post_status(post_id: int, public: bool, usr: ann_user_need, posts_service: ann_posts_service):
-    return await posts_service.ChangeStatus(usr=usr, post_id=post_id, public=public)
+async def change_post_status(
+    post_id: int,
+    public: bool,
+    usr: ann_user_need,
+    posts_service: ann_posts_service,
+    background_tasks: BackgroundTasks,
+    search_service: ann_elastic_service,
+):
+    resp = await posts_service.ChangeStatus(usr=usr, post_id=post_id, public=public)
+    if public:
+        background_tasks.add_task(search_service.AddPostToIndexById, post_id)
+    else:
+        background_tasks.add_task(search_service.remove_post, post_id)
+
+    return resp
 

@@ -107,4 +107,23 @@ class PostsService:
 
         return await self.posts_repo.update({"public": public}, id=post_id)
 
+    async def GetSelfPost(self, usr: UsersSchema, post_id: int):
+        resp: PostsModel = await self.posts_repo.get_self_post(post_id=post_id, usr_id=usr.id)
+        if not resp:
+            raise exceptions.posts.PostNotFound
+        likes = calc_likes_and_dislikes(resp.likes)
+        if not resp:
+            raise exceptions.posts.PostNotFound
+
+        return FullPost(
+            id=resp.id,
+            title=resp.title,
+            text=resp.text,
+            created_at=resp.created_at,
+            author_id=resp.author_id,
+            author_name=resp.author.nickname,
+            likes=likes["likes"],
+            dislikes=likes['dislikes'],
+            public=resp.public,
+        )
 

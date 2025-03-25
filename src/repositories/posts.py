@@ -48,6 +48,21 @@ class PostsRepository(SQLAlchemyRepository):
             logging.error(str(e))
             raise e
 
+    async def get_self_post(self, post_id: int, usr_id: int) -> Optional[PostsModel]:
+        try:
+            async with async_session_maker() as session:
+                query = select(PostsModel).filter_by(id=post_id)
+                resp = await session.execute(query)
+                resp = resp.scalar_one_or_none()
+                await session.refresh(resp, attribute_names=["author", "likes"])
+                if not resp:
+                    raise exceptions.posts.PostNotFound
+                if resp.author.id != usr_id:
+                    raise exceptions.posts.ItsNotYour
+                return resp
+        except Exception as e:
+            logging.error(str(e))
+
     async def get_full_post(self, post_id: int) -> Optional[PostsModel]:
         try:
             async with async_session_maker() as session:
@@ -58,6 +73,7 @@ class PostsRepository(SQLAlchemyRepository):
                 return post
         except Exception as e:
             logging.error(str(e))
+            raise e
 
     async def get_last_page_posts(self, page: int) -> List[PostsModel]:
         try:
@@ -81,7 +97,7 @@ class PostsRepository(SQLAlchemyRepository):
     async def get_all_posts(self) -> List[schemas.posts.FullPost]:
         try:
             async with async_session_maker() as session:
-                stm = select(PostsModel)
+                stm = select(PostsModel).filter_by(public=True)
                 res = await session.execute(stm)
                 result = res.scalars().all()
 
@@ -99,7 +115,8 @@ class PostsRepository(SQLAlchemyRepository):
                         text=i.text,
                         author_id=i.author_id,
                         author_name=i.author.nickname,
-                        created_at=i.created_at
+                        created_at=i.created_at,
+                        public=i.public
                     )) for i in result]
                 return ready
         except Exception as e:
