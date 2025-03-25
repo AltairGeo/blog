@@ -76,7 +76,7 @@ class PostsService:
         return final
 
     async def ChangePost(self, post_id: int, data: ChangePostSchema, usr: UsersSchema) -> bool:
-        post: PostsModel = await self.posts_repo.find_one(id=data.post_id)
+        post: PostsModel = await self.posts_repo.find_one(id=post_id)
         if not post:
             raise exceptions.posts.PostNotFound
         if post.author_id != usr.id:
@@ -87,7 +87,7 @@ class PostsService:
                     "title": data.title,
                     "text": data.text,
                 },
-                id=data.post_id,
+                id=post_id,
                 author_id=usr.id,
             )
             return change

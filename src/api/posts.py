@@ -52,14 +52,22 @@ async def delete_post(
         return False
 
 
-@router.get('/{post_id}')
-async def get_post(post_id: int, posts_service: ann_posts_service):
-    return await posts_service.GetPostByID(post_id=post_id)
-
 
 @router.get('/get_last_posts_page')
 async def getting_last_posts_page(page: int, posts_service: ann_posts_service) -> List[schemas.posts.FullPost]:
     return await posts_service.GetLastPostsPage(page=page)
+
+
+
+
+@router.get('/count')
+async def get_count_posts(posts_service: ann_posts_service) -> int:
+    return await posts_service.GetPostsCount()
+
+
+@router.get('/{post_id}')
+async def get_post(post_id: int, posts_service: ann_posts_service):
+    return await posts_service.GetPostByID(post_id=post_id)
 
 
 @router.put("/{post_id}")
@@ -75,15 +83,9 @@ async def change_post(
     if res:
         background_tasks.add_task(
             search_service.update_post,
-            new_post.post_id,
+            post_id,
             {"title": new_post.title, "text": new_post.text})
     return res
-
-
-@router.get('/count')
-async def get_count_posts(posts_service: ann_posts_service) -> int:
-    return await posts_service.GetPostsCount()
-
 
 @router.get('/{post_id}/like')
 async def like_post(post_id: int, like_service: ann_likes_service, usr: ann_user_need):
