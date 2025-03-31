@@ -1,0 +1,99 @@
+version: '3.8' # Рекомендуется использовать более свежую версию для поддержки новых функций
+
+# Поднять всё нужное одной командой и жить счастливо ~.~
+
+services:
+  # --- Сервисы PostgreSQL ---
+  pg:
+    image: postgres:latest # Лучше указать конкретную версию, например postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: blog
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/data/postgres
+    networks:
+      - backend_net # Используем общую сеть для бэкенда
+
+  pgadmin:
+    container_name: pgadmin_ui
+    image: dpage/pgadmin4:latest # Лучше указать конкретную версию
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@test.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - backend_net # Используем общую сеть для бэкенда
+    depends_on:
+      - pg
+
+  # --- Сервисы Elasticsearch и Kibana ---
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0 # Укажите желаемую версию (должна совпадать с Kibana)
+    container_name: elasticsearch_node
+    environment:
+      - discovery.type=single-node # Режим для одного узла (для локальной разработки)
+      - ELASTIC_PASSWORD=admin # Устанавливает пароль 'admin' для встроенного суперпользователя 'elastic'
+      - xpack.security.enabled=false # Включаем базовую безопасность X-Pack
+      - xpack.security.http.ssl.enabled=false # Отключаем SSL для HTTP (упрощение для локальной разработки)
+      - xpack.security.transport.ssl.enabled=false # Отключаем SSL для меж-узлового общения
+      # Опционально: Ограничение памяти для Elasticsearch (настройте под свою систему)
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - es_data:/usr/share/elasticsearch/data # Сохранение данных Elasticsearch
+    ports:
+      - "9200:9200" # Порт для API Elasticsearch
+      - "9300:9300" # Порт для меж-узлового общения (может не понадобиться для single-node)
+    networks:
+      - backend_net # Используем общую сеть для бэкенда
+    healthcheck: # Проверка работоспособности Elasticsearch
+      test: ["CMD-SHELL", "curl -s -u elastic:admin http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.0 # Версия должна совпадать с Elasticsearch
+    container_name: kibana_ui
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200/ # Указываем адрес Elasticsearch (используем имя сервиса)
+    ports:
+      - "5601:5601" # Порт для веб-интерфейса Kibana
+    networks:
+      - backend_net # Используем общую сеть для бэкенда
+    depends_on:
+      elasticsearch: # Запускать Kibana только после запуска и проверки Elasticsearch
+        condition: service_healthy # Ждем успешного healthcheck'а Elasticsearch
+
+  minio:
+    image: minio/minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    networks:
+      - backend_net
+    volumes:
+      - 'minio_data:/data'
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin123
+    command: server /data --console-address ":9001"
+
+# --- Сети ---
+networks:
+  backend_net: # Переименовал сеть для большей универсальности
+    driver: bridge
+
+# --- Тома для хранения данных ---
+volumes:
+  minio_data:
+  postgres_data: # Переименовал том для ясности
+  pgadmin_data: # Переименовал том для ясности
+  es_data: # Добавил том для данных Elasticsearch

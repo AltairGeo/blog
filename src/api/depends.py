@@ -58,11 +58,11 @@ def s3_service():
     )
 
 
-def get_current_user(
+async def get_current_user(
         token: Annotated[str, Depends(oauth_schema)],
         serv_auth: Annotated[AuthService, Depends(auth_service)]
 ):
-    return asyncio.run(serv_auth.GetUserWithToken(token))
+    return await serv_auth.GetUserWithToken(token)
 
 
 def likes_service():
