@@ -18,6 +18,8 @@ class S3Repo():
             "endpoint_url": endpoint_url,
         }
 
+        print(self.config)
+
         self.bucket_name = bucket_name
         self.session = get_session()
 
