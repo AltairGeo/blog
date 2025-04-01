@@ -37,6 +37,7 @@ async def get_self(usr: ann_user_need) -> schemas.users.BaseInfo:
         nickname=usr.nickname,
         role=usr.role,
         bio=usr.bio,
+        created_at=usr.created_at,
     )
 
 

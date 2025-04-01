@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 from pydantic import EmailStr, Field
-from schemas.tables import UsersSchema
+from datetime import datetime
 
 from schemas.base import BaseSchema
 from schemas.token import Token
@@ -29,6 +29,7 @@ class BaseInfo(BaseSchema):
     nickname: str
     role: Any
     bio: Optional[str] = Field(default=None, max_length=100)
+    created_at: Optional[datetime]
 
 
 class AvatarUpload(BaseSchema):

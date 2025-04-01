@@ -45,6 +45,7 @@ class UsersModel(ModelBase):  # Users table
     avatar_path: Mapped[str] = mapped_column(nullable=True)
     posts: Mapped[List["PostsModel"]] = relationship(back_populates="author")
     role: Mapped[str] = mapped_column(nullable=True, unique=False)
+    created_at: Mapped[datetime] = mapped_column(nullable=True)
 
     def to_schema(self) -> UsersSchema:
         return UsersSchema(
@@ -55,6 +56,7 @@ class UsersModel(ModelBase):  # Users table
             avatar_path=self.avatar_path,
             role=self.role,
             bio=self.bio,
+            created_at=self.created_at
         )
 
 

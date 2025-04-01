@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import exceptions
 import exceptions.users
 import schemas
@@ -20,6 +22,7 @@ class AuthService:
 
         user.password = security.utils.create_hash(user.password.strip())  # Hashing password
         user_dict = user.model_dump()
+        user_dict.update({"created_at": datetime.now(timezone.utc).replace(tzinfo=None)})
         resp: UsersModel = await self.users_repo.create(user_dict)
         user_schema = resp.to_schema()
         return user_schema

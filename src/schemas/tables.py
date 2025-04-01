@@ -15,6 +15,7 @@ class UsersSchema(BaseSchema):
     avatar_path: Optional[str]
     role: Optional[str]
     bio: Optional[str] = Field(default=None, max_length=100)
+    created_at: Optional[datetime]
 
 
 class PostsSchema(BaseSchema):
