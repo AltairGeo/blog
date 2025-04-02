@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from pydantic import EmailStr, Field
+from pydantic import EmailStr, Field, AnyHttpUrl
 from datetime import datetime
 
 from schemas.base import BaseSchema
@@ -30,6 +30,7 @@ class BaseInfo(BaseSchema):
     role: Any
     bio: Optional[str] = Field(default=None, max_length=100)
     created_at: Optional[datetime]
+    avatar_path: Optional[AnyHttpUrl]
 
 
 class AvatarUpload(BaseSchema):
