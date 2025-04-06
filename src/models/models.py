@@ -64,7 +64,7 @@ class PostsLikesModel(ModelBase):
     __tablename__ = "posts_likes"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id"))
+    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"))
     is_like: Mapped[bool] = mapped_column(Boolean, nullable=False)
     post: Mapped["PostsModel"] = relationship(back_populates="likes")
 
