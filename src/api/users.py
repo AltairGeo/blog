@@ -20,7 +20,7 @@ ann_users_service = Annotated[UsersService, Depends(users_service)]
 annotated_s3_service = Annotated[S3Service, Depends(s3_service)]
 
 
-@router.post('/change_password')
+@router.patch('/change_password')
 async def change_password(
         data: schemas.users.ChangePasswordSchema,
         users_service: Annotated[UsersService, Depends(users_service)],
@@ -70,3 +70,8 @@ async def change_name(new_name, usr: ann_user_need, users_service: ann_users_ser
 @router.get('/change_bio')
 async def change_bio(bio: str, usr: ann_user_need, users_service: ann_users_service):
     return await users_service.ChangeBio(ChangeBIO(bio=bio, usr_id=usr.id, usr_mail=usr.email))
+
+
+@router.get('/get_user')
+async def get_user_by_id(user_id: int, users_service: ann_users_service):
+    return await users_service.GetUserById(user_id)

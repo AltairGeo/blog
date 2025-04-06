@@ -29,17 +29,6 @@ class UsersService:
         if resp:
             return resp
 
-    async def GetSelfByToken(self, token: schemas.token.Token) -> schemas.users.BaseInfo:
-        security.token.check_token_to_expire(token=token)
-        decoded = security.token.decode_jwt_token(token=token)
-        resp: UsersModel = await self.users_repo.find_one(id=decoded.id)
-
-        return schemas.users.BaseInfo(
-            id=resp.id,
-            email=resp.email,
-            nickname=resp.nickname,
-            role=resp.role,
-        )
 
     async def GetUserPosts(self, user_id: int) -> List[schemas.tables.PostsSchema]:
         posts = await self.users_repo.GetUserPosts(user_id=user_id)
@@ -57,3 +46,15 @@ class UsersService:
 
     async def ChangeBio(self, bio: ChangeBIO) -> bool:
         return await self.users_repo.update({"bio": bio.bio}, id=bio.usr_id, email=bio.usr_mail)
+
+    async def GetUserById(self, user_id: int) -> schemas.users.BaseInfo:
+        user: UsersModel = await self.users_repo.find_one(id=user_id)
+        return schemas.users.BaseInfo(
+            id=user.id,
+            bio=user.bio,
+            avatar_path=user.avatar_path,
+            email=user.email,
+            created_at=user.created_at,
+            nickname=user.nickname,
+            role=user.role
+        )
