@@ -6,6 +6,7 @@ from pydantic import HttpUrl
 
 import schemas
 from api.depends import users_service, s3_service, get_current_user
+from schemas.posts import FullPost
 from schemas.tables import PostsSchema, UsersSchema
 from schemas.users import ChangeBIO
 from services.s3 import S3Service
@@ -43,7 +44,7 @@ async def get_self(usr: ann_user_need) -> schemas.users.BaseInfo:
 
 
 @router.get('/posts/{user_id}')
-async def get_user_posts(user_id: int, users_service: ann_users_service) -> List[PostsSchema]:
+async def get_user_posts(user_id: int, users_service: ann_users_service) -> List[FullPost]:
     return await users_service.GetUserPosts(user_id=user_id)
 
 

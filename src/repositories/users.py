@@ -18,8 +18,9 @@ class UsersRepository(SQLAlchemyRepository):
                 user = await session.execute(query)
                 user = user.scalar_one()
                 await session.refresh(user, ['posts'])
-                posts = user.posts
-                return posts
+                for i in user.posts:
+                    await session.refresh(i, ["author", "likes"])
+                return user.posts
         except Exception as e:
             logging.error(str(e))
             raise e

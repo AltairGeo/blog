@@ -7,7 +7,9 @@ import schemas
 import security
 from models.models import UsersModel
 from repositories.users import UsersRepository
+from schemas.posts import FullPost
 from schemas.users import ChangeBIO
+from utils.posts import calc_likes_and_dislikes
 
 
 class UsersService:
@@ -30,12 +32,35 @@ class UsersService:
             return resp
 
 
-    async def GetUserPosts(self, user_id: int) -> List[schemas.tables.PostsSchema]:
+    async def GetUserPosts(self, user_id: int) -> List[FullPost]:
         posts = await self.users_repo.GetUserPosts(user_id=user_id)
-        posts.reverse()
+
         if posts == []:
             raise exceptions.posts.PostsNotFound
-        return [i.to_schema() for i in posts]
+        # return [i.to_schema() for i in posts]
+        posts.reverse()
+
+        final = []
+        for i in posts:
+            ratings = calc_likes_and_dislikes(i.likes)
+            username = i.author.nickname
+
+            final.append(FullPost(
+                id=i.id,
+                title=i.title,
+                text=i.text,
+                created_at=i.created_at,
+                author_id=i.author_id,
+                author_name=username,
+                likes=ratings['likes'],
+                dislikes=ratings['dislikes'],
+                public=i.public,
+            ))
+
+        return final
+
+
+
 
     async def GetAvatar(self, user_id: int) -> str:
         usr: UsersModel = await self.users_repo.find_one(id=user_id)
