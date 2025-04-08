@@ -5,10 +5,11 @@ from fastapi import APIRouter, Depends, UploadFile, File
 from pydantic import HttpUrl
 
 import schemas
-from api.depends import users_service, s3_service, get_current_user
+from api.depends import users_service, s3_service, get_current_user, likes_service
 from schemas.posts import FullPost
 from schemas.tables import PostsSchema, UsersSchema
 from schemas.users import ChangeBIO
+from services.likes import LikesService
 from services.s3 import S3Service
 from services.users import UsersService
 
@@ -19,7 +20,7 @@ router = APIRouter(
 ann_user_need = Annotated[UsersSchema, Depends(get_current_user)]
 ann_users_service = Annotated[UsersService, Depends(users_service)]
 annotated_s3_service = Annotated[S3Service, Depends(s3_service)]
-
+ann_likes_service = Annotated[LikesService, Depends(likes_service)]
 
 @router.patch('/change_password')
 async def change_password(
@@ -41,11 +42,6 @@ async def get_self(usr: ann_user_need) -> schemas.users.BaseInfo:
         created_at=usr.created_at,
         avatar_path=usr.avatar_path,
     )
-
-
-@router.get('/posts/{user_id}')
-async def get_user_posts(user_id: int, users_service: ann_users_service) -> List[FullPost]:
-    return await users_service.GetUserPosts(user_id=user_id)
 
 
 @router.post('/avatar_upload')
@@ -76,3 +72,8 @@ async def change_bio(bio: str, usr: ann_user_need, users_service: ann_users_serv
 @router.get('/get_user')
 async def get_user_by_id(user_id: int, users_service: ann_users_service):
     return await users_service.GetUserById(user_id)
+
+
+@router.get('/{user_id}/posts')
+async def get_user_posts(user_id: int, users_service: ann_users_service) -> List[FullPost]:
+    return await users_service.GetUserPosts(user_id=user_id)
